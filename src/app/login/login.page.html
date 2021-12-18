@@ -1,0 +1,23 @@
+
+<ion-content>
+  <form style="margin-right: 10px; margin-left: 10px; margin-top: 15px;">
+    <ion-img src="../assets/loginlog.svg" style="margin-bottom: 10px;"></ion-img>
+    <ion-item lines="full">
+      <ion-label position="floating">Username</ion-label>
+      <ion-input type="text" [value]="username"
+      (input)="username=$event.target.value" required></ion-input>
+    </ion-item>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Password</ion-label>
+      <ion-input type="password" [value]="password"
+      (input)="password=$event.target.value"></ion-input>
+    </ion-item>
+
+    <ion-row>
+      <ion-col>
+        <ion-button type="submit" color="primary" expand="block" (click)="SignIn()">Sign In</ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
+</ion-content>

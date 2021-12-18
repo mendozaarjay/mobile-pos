@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="tabs/tabs1"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Issue Ticket</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+<ion-item>
+  <ion-label>Your next ticket is : {{ticketNo}}</ion-label>
+</ion-item>
+<ion-item>
+  <ion-label>Plate Number:</ion-label>
+  <ion-input placeholder="Plate Number" [value]="plateNo" (input)="plateNo=$event.target.value.toLocaleUpperCase()" ></ion-input>
+</ion-item>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button color="primary" expand="block" (click)="presentLoading()" >Print</ion-button>
+  </ion-toolbar>
+</ion-footer>

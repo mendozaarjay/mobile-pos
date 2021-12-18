@@ -4,7 +4,12 @@ import { TabsPage } from './tabs.page';
 
 const routes: Routes = [
   {
-    path: 'tabs',
+    path: '',
+    redirectTo: '/home/tab1',
+    pathMatch: 'full'
+  },
+  {
+    path: '',
     component: TabsPage,
     children: [
       {
@@ -20,16 +25,10 @@ const routes: Routes = [
         loadChildren: () => import('../tab3/tab3.module').then(m => m.Tab3PageModule)
       },
       {
-        path: '',
-        redirectTo: '/tabs/tab1',
-        pathMatch: 'full'
-      }
+        path: 'printticket',
+        loadChildren: () => import('../printticket/printticket.module').then(m => m.PrintticketPageModule)
+      },
     ]
-  },
-  {
-    path: '',
-    redirectTo: '/tabs/tab1',
-    pathMatch: 'full'
   }
 ];
 

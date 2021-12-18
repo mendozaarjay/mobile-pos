@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Tab 1
+      Transactions
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -9,9 +9,24 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Tab 1</ion-title>
+      <ion-title>Transactions</ion-title>
     </ion-toolbar>
   </ion-header>
+  <br>
+  <ion-row>
+    <ion-col>
+      <ion-button color="primary" expand="block" routerLink="/issueticket">Issue Ticket</ion-button>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-button color="success" expand="block" routerLink="/issueor">Issue OR</ion-button>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-button color="danger" expand="block" routerLink="/blacklist">Black List</ion-button>
+    </ion-col>
+  </ion-row>
 
-  <app-explore-container name="Tab 1 page"></app-explore-container>
 </ion-content>

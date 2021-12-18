@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="tabs/tabs1"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Black Listing</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+<form>
+  <ion-item>
+    <ion-label>Plate Number</ion-label>
+    <ion-input type="text" placeholder="Plate Number"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Reason for Blacklisting</ion-label>
+    <ion-select>
+      <ion-select-option>No payment, Runaway.</ion-select-option>
+      <ion-select-option>Cause Damage within carpark.</ion-select-option>
+    </ion-select>
+  </ion-item>
+</form>
+<ion-button expand="block" color="danger">Black List</ion-button>
+
+
+</ion-content>

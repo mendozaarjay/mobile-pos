@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Tab 3
+      Settings
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -9,9 +9,34 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
+      <ion-title size="large">Settings</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <app-explore-container name="Tab 3 page"></app-explore-container>
+  <ion-item>
+    <ion-label>Printer</ion-label>
+    <ion-input placeholder="Printer"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>MIN</ion-label>
+    <ion-input placeholder="MIN"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Serial</ion-label>
+    <ion-input placeholder="Serial"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>PTU</ion-label>
+    <ion-datetime placeholder="PTU"></ion-datetime>
+  </ion-item>
+  <ion-item>
+    <ion-label>Accreditation</ion-label>
+    <ion-datetime placeholder="Accreditation"></ion-datetime>
+  </ion-item>
 </ion-content>
+<ion-footer>
+  <ion-toolbar>
+    <ion-button color="success" expand="block">Save Settings</ion-button>
+  </ion-toolbar>
+</ion-footer>
