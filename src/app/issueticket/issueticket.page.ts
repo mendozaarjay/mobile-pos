@@ -3,7 +3,7 @@ import { LoadingController, Platform } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Constants } from '../config/constants';
-import { Printer, PrintOptions } from '@ionic-native/printer/ngx';
+import { Printer, PrintOptions } from '@awesome-cordova-plugins/printer/ngx';
 import { Device } from '@ionic-native/device/ngx';
 @Component({
   selector: 'app-issueticket',
@@ -26,6 +26,14 @@ export class IssueticketPage implements OnInit {
     this.loadNextTicket();
   }
   async presentLoading() {
+
+    const loading = await this.loadingController.create({
+      cssClass: 'my-custom-class',
+      message: 'Please wait while printing ticket...',
+      duration: 2000,
+    });
+    await loading.present();
+
     const baseUrl =
       this.constant.apiEndPoint +
       '/ticket/printticket?ticketNo=' +
@@ -37,12 +45,7 @@ export class IssueticketPage implements OnInit {
       this.loadNextTicket();
     });
 
-    const loading = await this.loadingController.create({
-      cssClass: 'my-custom-class',
-      message: 'Please wait while printing ticket...',
-      duration: 2000,
-    });
-    await loading.present();
+
     await this.loadNextTicket();
     this.plateNo = '';
     const { role, data } = await loading.onDidDismiss();
@@ -65,16 +68,8 @@ export class IssueticketPage implements OnInit {
   }
 
   printTicketNo(base64String) {
-    this.platform.ready().then((source) => {
-      if(this.platform.is('android')){
-        console.log('android daw' + source);
-        // this.printer.isAvailable().then(() => {
-        //   this.printer.print('base64://' + base64String);
-        // });
-      }
-      else{
-        console.log('sample');
-      }
+    this.printer.isAvailable().then(() => {
+      this.printer.print('base64://' + base64String);
     });
 
   }

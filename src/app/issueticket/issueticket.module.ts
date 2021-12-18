@@ -6,7 +6,7 @@ import { IssueticketPageRoutingModule } from './issueticket-routing.module';
 import { IssueticketPage } from './issueticket.page';
 import { HttpClientModule } from '@angular/common/http';
 import { Constants } from '../config/constants';
-import { Printer, PrintOptions } from '@ionic-native/printer/ngx';
+import { Printer, PrintOptions } from '@awesome-cordova-plugins/printer/ngx';
 import { Device } from '@ionic-native/device/ngx';
 
 @NgModule({
