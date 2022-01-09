@@ -20,7 +20,12 @@ export class LoginPage implements OnInit {
   ) {}
 
   ngOnInit() {}
-  async SignIn() {
+
+  async SignIn()
+  {
+    this.router.navigateByUrl('/home');
+  }
+  async SignInNew() {
     if (this.username === '' || this.password === '') {
       this.showLoginError();
       return;

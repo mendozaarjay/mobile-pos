@@ -13,6 +13,18 @@ import { Device } from '@ionic-native/device/ngx';
 export class IssueticketPage implements OnInit {
   plateNo: string = '';
   ticketNo: string = '';
+
+  myCompanyName: string;
+  myAddress1: string;
+  myAddress2: string;
+  myAddress3: string;
+  myTIN: string;
+  myPlateNo: string;
+  myTicketNo: string;
+  myTimeIn: string;
+  myTerminal: string;
+  myLocation: string;
+
   constructor(
     public loadingController: LoadingController,
     private httpClient: HttpClient,
@@ -41,7 +53,16 @@ export class IssueticketPage implements OnInit {
       '&plateNo=' +
       this.plateNo;
     this.httpClient.get<any>(baseUrl).subscribe((ticketdata) => {
-      this.printTicketNo(ticketdata);
+      // this.printTicketNo(ticketdata);
+      this.myCompanyName = ticketdata.Company;
+      this.myAddress1 = ticketdata.Address1;
+      this.myAddress2 = ticketdata.Address2;
+      this.myAddress3 = ticketdata.Address3;
+      this.myPlateNo = ticketdata.PlateNo;
+      this.myTicketNo = ticketdata.TicketNo;
+      this.myTimeIn = ticketdata.TimeIn;
+      this.myTerminal = ticketdata.Terminal;
+      this.myLocation = ticketdata.Location;
       this.loadNextTicket();
     });
 
@@ -59,17 +80,16 @@ export class IssueticketPage implements OnInit {
       this.ticketNo = ticketdata;
     });
   }
-  downloadPdf(base64String, fileName) {
-    const source = `data:application/pdf;base64,${base64String}`;
-    const link = document.createElement('a');
-    link.href = source;
-    link.download = `${fileName}.pdf`;
-    link.click();
-  }
-
   printTicketNo(base64String) {
+    const content = document.getElementById('printer').innerHTML;
+    const option: PrintOptions = {
+      autoFit: true,
+      monochrome: true,
+      margin: false,
+
+    };
     this.printer.isAvailable().then(() => {
-      this.printer.print('base64://' + base64String);
+      this.printer.print(content, option);
     });
 
   }
