@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Constants } from '../config/constants';
 import { AlertController } from '@ionic/angular';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -41,8 +42,12 @@ export class LoginPage implements OnInit {
         this.showLoginError();
       }
       else{
+        this.constants.userId = res.Id;
         this.router.navigateByUrl('/home');
       }
+    },(error) => {
+      console.log(error);
+      this.printError(error);
     });
   }
   async showLoginError() {
@@ -50,6 +55,15 @@ export class LoginPage implements OnInit {
       cssClass: 'my-custom-class',
       header: 'Login Failed',
       message: 'Please verify your username and password',
+      buttons: ['OK'],
+    });
+    await alert.present();
+  }
+  async printError(message: string) {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: 'Login Failed',
+      message,
       buttons: ['OK'],
     });
     await alert.present();

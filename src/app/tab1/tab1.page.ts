@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Printer, PrintOptions } from '@ionic-native/printer/ngx';
 import { LoadingController } from '@ionic/angular';
+import { Constants } from '../config/constants';
 
 @Component({
   selector: 'app-tab1',
@@ -10,9 +11,9 @@ import { LoadingController } from '@ionic/angular';
 })
 export class Tab1Page  implements OnInit{
 
-  constructor(private printer: Printer, private httpClient: HttpClient, private loader: LoadingController) {}
+  constructor(private printer: Printer, private httpClient: HttpClient, private loader: LoadingController, private constant: Constants) {}
   ngOnInit(){
-    console.log('test');
+
   }
 
  async printMe(){

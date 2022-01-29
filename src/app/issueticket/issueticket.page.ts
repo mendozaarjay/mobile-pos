@@ -38,7 +38,6 @@ export class IssueticketPage implements OnInit {
     this.loadNextTicket();
   }
   async presentLoading() {
-
     const loading = await this.loadingController.create({
       cssClass: 'my-custom-class',
       message: 'Please wait while printing ticket...',
@@ -66,7 +65,7 @@ export class IssueticketPage implements OnInit {
       this.loadNextTicket();
     });
 
-
+    await this.printTicketNo('print');
     await this.loadNextTicket();
     this.plateNo = '';
     const { role, data } = await loading.onDidDismiss();
@@ -80,17 +79,15 @@ export class IssueticketPage implements OnInit {
       this.ticketNo = ticketdata;
     });
   }
-  printTicketNo(base64String) {
+  async printTicketNo(base64String) {
     const content = document.getElementById('printer').innerHTML;
     const option: PrintOptions = {
       autoFit: true,
       monochrome: true,
       margin: false,
-
     };
     this.printer.isAvailable().then(() => {
       this.printer.print(content, option);
     });
-
   }
 }

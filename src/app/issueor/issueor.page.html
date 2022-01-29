@@ -59,7 +59,12 @@
   </ion-item>
   <ion-item>
     <ion-label floating>Tender Amount:</ion-label>
-    <ion-input type="number" class="ion-text-right" placeholder="Tender Amount"></ion-input>
+    <ion-input type="number" class="ion-text-right" placeholder="Tender Amount"
+    [value]="tenderamount"
+    (input)="tenderamount=$event.target.value"
+    placeholder="0.00"
+    (keyup)="tenderAmountChanged($event)"
+    ></ion-input>
   </ion-item>
   <ion-button color="light" expand="block" (click)="computeRate()">Compute</ion-button>
   <ion-item>
@@ -67,20 +72,20 @@
   </ion-item>
 
   <ion-item>
-    <ion-label> VAT:</ion-label>
+    <ion-label> VAT: {{vat | number : '1.2-2'}}</ion-label>
 
   </ion-item>
 
   <ion-item>
-    <ion-label>Fee:</ion-label>
+    <ion-label>Fee: {{fee | number : '1.2-2'}}</ion-label>
 
   </ion-item>
   <ion-item>
-    <ion-label>Change:</ion-label>
+    <ion-label>Change: {{change | number : '1.2-2'}}</ion-label>
 
   </ion-item>
   <ion-item>
-    <ion-label>Total Amount:</ion-label>
+    <ion-label>Total Amount: {{totalamount | number : '1.2-2'}}</ion-label>
 
   </ion-item>
 
@@ -91,6 +96,6 @@
 
 <ion-footer>
   <ion-toolbar>
-    <ion-button color="success" expand="block" (click)="presentLoading()">Print</ion-button>
+    <ion-button color="success" expand="block" (click)="printOfficialReceipt()">Print</ion-button>
   </ion-toolbar>
 </ion-footer>

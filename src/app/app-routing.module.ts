@@ -26,6 +26,11 @@ const routes: Routes = [
     path: 'issueticket',
     loadChildren: () => import('./issueticket/issueticket.module').then( m => m.IssueticketPageModule)
   },
+  {
+    path: 'ticketprinter',
+    loadChildren: () => import('./ticketprinter/ticketprinter.module').then( m => m.TicketprinterPageModule)
+  },
+
 
 ];
 @NgModule({
