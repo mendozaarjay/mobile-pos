@@ -5,6 +5,9 @@ import { HttpClient } from '@angular/common/http';
 import { Constants } from '../config/constants';
 import { Printer, PrintOptions } from '@awesome-cordova-plugins/printer/ngx';
 import { Device } from '@ionic-native/device/ngx';
+import { PrintService } from '../services/print.service';
+import EscPosEncoder from 'esc-pos-encoder-ionic';
+import { commands } from '../services/printer-commands';
 @Component({
   selector: 'app-issueticket',
   templateUrl: './issueticket.page.html',
@@ -24,14 +27,15 @@ export class IssueticketPage implements OnInit {
   myTimeIn: string;
   myTerminal: string;
   myLocation: string;
-
+  private macaddress: string = '00:13:7B:3A:9C:BA';
   constructor(
     public loadingController: LoadingController,
     private httpClient: HttpClient,
     private constant: Constants,
     private printer: Printer,
     private platform: Platform,
-    private device: Device
+    private device: Device,
+    public print: PrintService
   ) {}
 
   ngOnInit() {
@@ -52,20 +56,11 @@ export class IssueticketPage implements OnInit {
       '&plateNo=' +
       this.plateNo;
     this.httpClient.get<any>(baseUrl).subscribe((ticketdata) => {
-      // this.printTicketNo(ticketdata);
-      this.myCompanyName = ticketdata.Company;
-      this.myAddress1 = ticketdata.Address1;
-      this.myAddress2 = ticketdata.Address2;
-      this.myAddress3 = ticketdata.Address3;
-      this.myPlateNo = ticketdata.PlateNo;
-      this.myTicketNo = ticketdata.TicketNo;
-      this.myTimeIn = ticketdata.TimeIn;
-      this.myTerminal = ticketdata.Terminal;
-      this.myLocation = ticketdata.Location;
+      // this.printTicketNo(ticketdata.printable);
+      console.log(ticketdata);
       this.loadNextTicket();
     });
 
-    await this.printTicketNo('print');
     await this.loadNextTicket();
     this.plateNo = '';
     const { role, data } = await loading.onDidDismiss();
@@ -79,15 +74,24 @@ export class IssueticketPage implements OnInit {
       this.ticketNo = ticketdata;
     });
   }
-  async printTicketNo(base64String) {
-    const content = document.getElementById('printer').innerHTML;
-    const option: PrintOptions = {
-      autoFit: true,
-      monochrome: true,
-      margin: false,
-    };
-    this.printer.isAvailable().then(() => {
-      this.printer.print(content, option);
-    });
+  async printTicketNo(printingdata,ticketno) {
+    const encoder = new EscPosEncoder();
+    const result = encoder.initialize();
+
+    result
+      .codepage('cp936')
+      .align('center')
+      .raw(commands.TEXT_FORMAT.TXT_NORMAL)
+      .line(printingdata)
+      .raw(commands.TEXT_FORMAT.TXT_NORMAL)
+      .text(commands.HORIZONTAL_LINE.HR_58MM)
+      .text(commands.HORIZONTAL_LINE.HR2_58MM)
+      .newline()
+      .raw(commands.TEXT_FORMAT.TXT_NORMAL)
+      .newline()
+      .qrcode(ticketno)
+      .newline()
+      .newline();
+    this.print.sendToBluetoothPrinter(this.macaddress, result.encode());
   }
 }

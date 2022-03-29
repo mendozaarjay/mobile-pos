@@ -7,16 +7,16 @@ import { IonicModule } from '@ionic/angular';
 import { TicketprinterPageRoutingModule } from './ticketprinter-routing.module';
 
 import { TicketprinterPage } from './ticketprinter.page';
-import { StarPRNT } from '@awesome-cordova-plugins/star-prnt/ngx';
+import { BluetoothSerial } from '@ionic-native/bluetooth-serial/ngx';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    TicketprinterPageRoutingModule
+    TicketprinterPageRoutingModule,
   ],
-  providers: [StarPRNT],
-  declarations: [TicketprinterPage]
+  providers: [BluetoothSerial],
+  declarations: [TicketprinterPage],
 })
 export class TicketprinterPageModule {}

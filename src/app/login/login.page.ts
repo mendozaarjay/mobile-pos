@@ -38,6 +38,7 @@ export class LoginPage implements OnInit {
       '&password=' +
       this.password;
     this.httpClient.get<any>(baseUrl).subscribe((res) => {
+      console.log(res);
       if (res.IsValid === false) {
         this.showLoginError();
       }
