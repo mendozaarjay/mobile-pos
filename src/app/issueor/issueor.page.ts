@@ -5,6 +5,9 @@ import { Constants } from '../config/constants';
 import { ParkerType } from '../models/ParkerType';
 import { Observable } from 'rxjs';
 import { AlertController } from '@ionic/angular';
+import { PrintService } from '../services/print.service';
+import EscPosEncoder from 'esc-pos-encoder-ionic';
+import { commands } from '../services/printer-commands';
 @Component({
   selector: 'app-issueor',
   templateUrl: './issueor.page.html',
@@ -29,12 +32,14 @@ export class IssueorPage implements OnInit {
   change: number;
   totalamount: number;
   userid: number = 8;
+  private macaddress: string = '00:13:7B:3A:9C:BA';
 
   constructor(
     public loadingController: LoadingController,
     private httpClient: HttpClient,
     private constant: Constants,
-    public alertController: AlertController
+    public alertController: AlertController,
+    public print: PrintService
   ) {}
 
   ngOnInit() {
@@ -152,7 +157,7 @@ export class IssueorPage implements OnInit {
       this.constant.userId;
     this.httpClient.get<any>(baseUrl).subscribe(
       (result) => {
-        console.log(result);
+        this.printData(result.Printable);
       },
       (error) => {
         console.log(error);
@@ -194,5 +199,23 @@ export class IssueorPage implements OnInit {
     this.timeOut = '';
     this.duration = '';
     this.id = '0';
+  }
+  async printData(printingdata) {
+    const encoder = new EscPosEncoder();
+    const result = encoder.initialize();
+
+    result
+      .codepage('cp936')
+      .align('center')
+      .raw(commands.TEXT_FORMAT.TXT_NORMAL)
+      .line(printingdata)
+      .raw(commands.TEXT_FORMAT.TXT_NORMAL)
+      .text(commands.HORIZONTAL_LINE.HR_58MM)
+      .text(commands.HORIZONTAL_LINE.HR2_58MM)
+      .newline()
+      .raw(commands.TEXT_FORMAT.TXT_NORMAL)
+      .newline()
+      .newline();
+    this.print.sendToBluetoothPrinter(this.macaddress, result.encode());
   }
 }

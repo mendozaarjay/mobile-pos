@@ -56,8 +56,7 @@ export class IssueticketPage implements OnInit {
       '&plateNo=' +
       this.plateNo;
     this.httpClient.get<any>(baseUrl).subscribe((ticketdata) => {
-      // this.printTicketNo(ticketdata.printable);
-      console.log(ticketdata);
+      this.printTicketNo(ticketdata.Printable, ticketdata.TicketNo);
       this.loadNextTicket();
     });
 
