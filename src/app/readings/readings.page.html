@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="tabs/tab1"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Readings</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title>Readings</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <br>
+  <ion-row>
+    <ion-col>
+      <ion-button color="primary" expand="block" routerLink="/xreading">X Reading</ion-button>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-button color="success" expand="block" routerLink="/yreading">Y Reading</ion-button>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-button color="secondary" expand="block" routerLink="/zreading">Z Reading</ion-button>
+    </ion-col>
+  </ion-row>
+
+</ion-content>

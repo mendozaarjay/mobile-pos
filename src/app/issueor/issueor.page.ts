@@ -25,14 +25,11 @@ export class IssueorPage implements OnInit {
   parkerType: ParkerType[] = [];
   defaultParkerType: string = '';
   tenderamount: number = 0;
-  gateid: number = 8;
   discount: number;
   vat: number;
   fee: number;
   change: number;
   totalamount: number;
-  userid: number = 8;
-  private macaddress: string = '00:13:7B:3A:9C:BA';
 
   constructor(
     public loadingController: LoadingController,
@@ -139,7 +136,7 @@ export class IssueorPage implements OnInit {
       this.id +
       '&' +
       'gate=' +
-      this.gateid +
+      this.constant.gateId +
       '&' +
       'parkertype=' +
       this.parkerTypeId +
@@ -216,6 +213,6 @@ export class IssueorPage implements OnInit {
       .raw(commands.TEXT_FORMAT.TXT_NORMAL)
       .newline()
       .newline();
-    this.print.sendToBluetoothPrinter(this.macaddress, result.encode());
+    this.print.sendToBluetoothPrinter(this.constant.bluetoothAddress, result.encode());
   }
 }

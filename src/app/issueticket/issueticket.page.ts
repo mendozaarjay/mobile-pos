@@ -27,7 +27,6 @@ export class IssueticketPage implements OnInit {
   myTimeIn: string;
   myTerminal: string;
   myLocation: string;
-  private macaddress: string = '00:13:7B:3A:9C:BA';
   constructor(
     public loadingController: LoadingController,
     private httpClient: HttpClient,
@@ -66,14 +65,15 @@ export class IssueticketPage implements OnInit {
   }
 
   async loadNextTicket() {
-    const gateId = 8;
     const nextTicketUrl =
-      this.constant.apiEndPoint + '/ticket/GetNextTicket?gate=' + gateId;
+      this.constant.apiEndPoint +
+      '/ticket/GetNextTicket?gate=' +
+      this.constant.gateId;
     this.httpClient.get<any>(nextTicketUrl).subscribe((ticketdata) => {
       this.ticketNo = ticketdata;
     });
   }
-  async printTicketNo(printingdata,ticketno) {
+  async printTicketNo(printingdata, ticketno) {
     const encoder = new EscPosEncoder();
     const result = encoder.initialize();
 
@@ -91,6 +91,9 @@ export class IssueticketPage implements OnInit {
       .qrcode(ticketno)
       .newline()
       .newline();
-    this.print.sendToBluetoothPrinter(this.macaddress, result.encode());
+    this.print.sendToBluetoothPrinter(
+      this.constant.bluetoothAddress,
+      result.encode()
+    );
   }
 }

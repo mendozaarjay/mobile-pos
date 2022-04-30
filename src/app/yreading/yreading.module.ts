@@ -1,0 +1,21 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+import { IonicModule } from '@ionic/angular';
+
+import { YreadingPageRoutingModule } from './yreading-routing.module';
+
+import { YreadingPage } from './yreading.page';
+import { HttpClientModule } from '@angular/common/http';
+@NgModule({
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    YreadingPageRoutingModule,
+    HttpClientModule
+  ],
+  declarations: [YreadingPage]
+})
+export class YreadingPageModule {}

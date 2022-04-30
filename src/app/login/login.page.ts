@@ -22,8 +22,7 @@ export class LoginPage implements OnInit {
 
   ngOnInit() {}
 
-  async SignIn()
-  {
+  async SignIn() {
     this.router.navigateByUrl('/home');
   }
   async SignInNew() {
@@ -36,20 +35,24 @@ export class LoginPage implements OnInit {
       '/ticket/isvaliduser?username=' +
       this.username +
       '&password=' +
-      this.password;
-    this.httpClient.get<any>(baseUrl).subscribe((res) => {
-      console.log(res);
-      if (res.IsValid === false) {
-        this.showLoginError();
+      this.password +
+      '&gateid=' +
+      this.constants.gateId;
+    this.httpClient.get<any>(baseUrl).subscribe(
+      (res) => {
+        console.log(res);
+        if (res.IsValid === false) {
+          this.showLoginError();
+        } else {
+          this.constants.userId = res.Id;
+          this.router.navigateByUrl('/home');
+        }
+      },
+      (error) => {
+        console.log(error);
+        this.printError(error);
       }
-      else{
-        this.constants.userId = res.Id;
-        this.router.navigateByUrl('/home');
-      }
-    },(error) => {
-      console.log(error);
-      this.printError(error);
-    });
+    );
   }
   async showLoginError() {
     const alert = await this.alertController.create({
@@ -69,4 +72,5 @@ export class LoginPage implements OnInit {
     });
     await alert.present();
   }
+
 }

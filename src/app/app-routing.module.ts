@@ -29,7 +29,23 @@ const routes: Routes = [
   {
     path: 'ticketprinter',
     loadChildren: () => import('./ticketprinter/ticketprinter.module').then( m => m.TicketprinterPageModule)
+  },  {
+    path: 'readings',
+    loadChildren: () => import('./readings/readings.module').then( m => m.ReadingsPageModule)
   },
+  {
+    path: 'xreading',
+    loadChildren: () => import('./xreading/xreading.module').then( m => m.XreadingPageModule)
+  },
+  {
+    path: 'yreading',
+    loadChildren: () => import('./yreading/yreading.module').then( m => m.YreadingPageModule)
+  },
+  {
+    path: 'zreading',
+    loadChildren: () => import('./zreading/zreading.module').then( m => m.ZreadingPageModule)
+  },
+
 
 
 ];

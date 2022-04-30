@@ -15,12 +15,22 @@
   <br>
   <ion-row>
     <ion-col>
-      <ion-button color="primary" expand="block" routerLink="/issueticket">Issue Ticket</ion-button>
+      <ion-button class="largebutton" color="primary" expand="block" routerLink="/issueticket">Issue Ticket</ion-button>
     </ion-col>
   </ion-row>
   <ion-row>
     <ion-col>
-      <ion-button color="success" expand="block" routerLink="/issueor">Issue OR</ion-button>
+      <ion-button class="largebutton" color="success" expand="block" routerLink="/issueor">Issue OR</ion-button>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-button class="largebutton" color="secondary" expand="block" routerLink="/readings">Readings</ion-button>
+    </ion-col>
+  </ion-row>
+  <ion-row class="margin-custom">
+    <ion-col>
+      <ion-button  color="danger" expand="block" (click)="logOut()">Log out</ion-button>
     </ion-col>
   </ion-row>
 

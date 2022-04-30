@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="readings"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Z Reading</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-row>
+    <ion-col>
+      <ion-button color="primary" expand="block" (click)="performZReading()">Perform Z Reading</ion-button>
+    </ion-col>
+  </ion-row>
+  <ion-item>
+    <ion-label>Your SR Number is : {{sRNo}}</ion-label>
+  </ion-item>
+</ion-content>
+<ion-footer>
+  <ion-toolbar>
+    <ion-button color="success" expand="block" (click)="printZReading()" [disabled]="sRNo?.length <= 0">Print</ion-button>
+  </ion-toolbar>
+</ion-footer>
