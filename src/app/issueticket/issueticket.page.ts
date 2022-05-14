@@ -52,6 +52,8 @@ export class IssueticketPage implements OnInit {
       this.constant.apiEndPoint +
       '/ticket/printticket?ticketNo=' +
       this.ticketNo +
+      '&gateid=' +
+      this.constant.gateId +
       '&plateNo=' +
       this.plateNo;
     this.httpClient.get<any>(baseUrl).subscribe((ticketdata) => {
