@@ -154,6 +154,7 @@ export class IssueorPage implements OnInit {
       this.constant.userId;
     this.httpClient.get<any>(baseUrl).subscribe(
       (result) => {
+        console.log(result.Printable);
         this.printData(result.Printable);
       },
       (error) => {
