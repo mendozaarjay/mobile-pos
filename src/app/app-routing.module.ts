@@ -29,7 +29,8 @@ const routes: Routes = [
   {
     path: 'ticketprinter',
     loadChildren: () => import('./ticketprinter/ticketprinter.module').then( m => m.TicketprinterPageModule)
-  },  {
+  },
+  {
     path: 'readings',
     loadChildren: () => import('./readings/readings.module').then( m => m.ReadingsPageModule)
   },
@@ -45,6 +46,18 @@ const routes: Routes = [
     path: 'zreading',
     loadChildren: () => import('./zreading/zreading.module').then( m => m.ZreadingPageModule)
   },
+  {
+    path: 'tenderdeclaration',
+    loadChildren: () => import('./tenderdeclaration/tenderdeclaration.module').then( m => m.TenderdeclarationPageModule)
+  },
+  {
+    path: 'changefund',
+    loadChildren: () => import('./changefund/changefund.module').then( m => m.ChangefundPageModule)
+  },  {
+    path: 'reprintor',
+    loadChildren: () => import('./reprintor/reprintor.module').then( m => m.ReprintorPageModule)
+  },
+
 
 
 

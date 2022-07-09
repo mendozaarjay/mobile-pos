@@ -9,15 +9,21 @@
 
 <ion-content>
   <ion-item>
-    <ion-label>Ticket No:</ion-label>
-    <ion-input type="text" placeholder="Ticket Number" [value]="ticketNo"
-      (input)="ticketNo=$event.target.value.toLocaleUpperCase()"></ion-input>
+    <ion-label>Search:</ion-label>
+    <ion-input
+      type="text"
+      placeholder="Ticket Number/Plate No"
+      [value]="ticketNo"
+      (input)="ticketNo=$event.target.value.toLocaleUpperCase()"
+    ></ion-input>
   </ion-item>
 
   <ion-grid>
     <ion-row>
       <ion-col size="6">
-        <ion-button expand="block" color="light" (click)="verifyTicket()">Verify</ion-button>
+        <ion-button expand="block" color="light" (click)="verifyTicket()"
+          >Verify</ion-button
+        >
       </ion-col>
       <ion-col size="6">
         <ion-button expand="block" color="primary">Scan QR</ion-button>
@@ -26,76 +32,123 @@
 
     <ion-item>
       <ion-label>Plate Number:</ion-label>
-      <ion-input type="text" placeholder="Plate Number" [value]="plateNo"
-        (input)="plateNo=$event.target.value.toLocaleUpperCase()"></ion-input>
+      <ion-input
+        type="text"
+        placeholder="Plate Number"
+        [value]="plateNo"
+        (input)="plateNo=$event.target.value.toLocaleUpperCase()"
+      ></ion-input>
     </ion-item>
     <ion-item>
       <ion-label>Ticket Number:</ion-label>
-      <ion-input type="text" placeholder="Ticket Number" [value]="verifiedTicketNo"
-        (input)="verifiedTicketNo=$event.target.value.toLocaleUpperCase()"></ion-input>
+      <ion-input
+        type="text"
+        placeholder="Ticket Number"
+        [value]="verifiedTicketNo"
+        (input)="verifiedTicketNo=$event.target.value.toLocaleUpperCase()"
+      ></ion-input>
     </ion-item>
   </ion-grid>
   <ion-item>
     <ion-label>Date/Time In: {{timeIn}}</ion-label>
-
   </ion-item>
 
   <ion-item>
     <ion-label>Date/Time Out: {{timeOut}}</ion-label>
-
   </ion-item>
 
   <ion-item>
     <ion-label>Duration: {{duration}}</ion-label>
-
   </ion-item>
+  <ion-item>
+    <ion-label>Transaction Type:</ion-label>
+    <ion-select
+      id="transactionTypeId"
+      [value]="defaulttransactionTypeId"
+      [(ngModel)]="transactionTypeId"
+      (ionChange)="typeChanged($event)"
+    >
+      <ion-select-option *ngFor="let item of transactionTypes" [value]="item.id"
+        >{{item.name}}</ion-select-option
+      >
+    </ion-select>
+  </ion-item>
+  <ion-item>
+    <ion-label floating>Cashless Reference:</ion-label>
+    <ion-input
+      type="text"
+      class="ion-text-right"
+      placeholder="Cashless Reference"
+      [value]="reference"
+      (input)="reference=$event.target.value"
+      [readonly]="isrefenable === false"
 
+    ></ion-input>
+  </ion-item>
   <ion-item>
     <ion-label>Parker Type:</ion-label>
-    <ion-select id="parkerTypeId" [value]="parkerTypeId" [(ngModel)]="parkerTypeId">
-      <ion-select-option *ngFor="let item of parkerType"  [value]="item.id">{{item.name}}</ion-select-option>
+    <ion-select
+      id="parkerTypeId"
+      [value]="defaultParkerType"
+      [(ngModel)]="parkerTypeId"
+    >
+      <ion-select-option *ngFor="let item of parkerType" [value]="item.id"
+        >{{item.name}}</ion-select-option
+      >
     </ion-select>
-
+  </ion-item>
+  <ion-item>
+    <ion-label>Discount Type:</ion-label>
+    <ion-select
+      id="discountTypeId"
+      [value]="discountTypeId"
+      [(ngModel)]="discountTypeId"
+      (ionChange)="discountChanged($event)"
+    >
+      <ion-select-option value="0">NONE</ion-select-option>
+      <ion-select-option *ngFor="let item of discountTypes" [value]="item.id"
+        >{{item.name}}</ion-select-option
+      >
+    </ion-select>
   </ion-item>
   <ion-item>
     <ion-label floating>Tender Amount:</ion-label>
-    <ion-input type="number" class="ion-text-right" placeholder="Tender Amount"
-    [value]="tenderamount"
-    (input)="tenderamount=$event.target.value"
-    placeholder="0.00"
-    (keyup)="tenderAmountChanged($event)"
+    <ion-input
+      type="number"
+      class="ion-text-right"
+      placeholder="Tender Amount"
+      [value]="tenderamount"
+      (input)="tenderamount=$event.target.value"
+      placeholder="0.00"
+      (keyup)="tenderAmountChanged($event)"
     ></ion-input>
   </ion-item>
-  <ion-button color="light" expand="block" (click)="computeRate()">Compute</ion-button>
+  <ion-button color="light" expand="block" (click)="computeRate()"
+    >Compute</ion-button
+  >
   <ion-item>
-    <ion-label>Discount:</ion-label>
+    <ion-label>Discount: {{discount}}</ion-label>
   </ion-item>
 
   <ion-item>
     <ion-label> VAT: {{vat | number : '1.2-2'}}</ion-label>
-
   </ion-item>
 
   <ion-item>
     <ion-label>Fee: {{fee | number : '1.2-2'}}</ion-label>
-
   </ion-item>
   <ion-item>
     <ion-label>Change: {{change | number : '1.2-2'}}</ion-label>
-
   </ion-item>
   <ion-item>
     <ion-label>Total Amount: {{totalamount | number : '1.2-2'}}</ion-label>
-
   </ion-item>
-
-
-
-
 </ion-content>
 
 <ion-footer>
   <ion-toolbar>
-    <ion-button color="success" expand="block" (click)="printOfficialReceipt()">Print</ion-button>
+    <ion-button color="success" expand="block" (click)="printOfficialReceipt()"
+      >Save and Print</ion-button
+    >
   </ion-toolbar>
 </ion-footer>

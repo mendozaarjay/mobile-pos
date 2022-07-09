@@ -1,0 +1,160 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Tender Declaration</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <ion-label>No of 1000 Php :</ion-label>
+    <ion-input
+      type="number"
+      [value]="php1000"
+      (input)="php1000=$event.target.value"
+      placeholder="0.00"
+      (keyup)="recalculateAll()"
+    ></ion-input>
+    <ion-label>{{totalphp1000 | currency:'Php '}}</ion-label>
+  </ion-item>
+  <ion-item>
+    <ion-label>No of 500 Php &nbsp; :</ion-label>
+    <ion-input
+      type="number"
+      [value]="php500"
+      (input)="php500=$event.target.value"
+      placeholder="0.00"
+      (keyup)="recalculateAll()"
+    ></ion-input>
+    <ion-label>{{totalphp500 | currency:'Php '}}</ion-label>
+  </ion-item>
+  <ion-item>
+    <ion-label>No of 200 Php&nbsp; &nbsp;:</ion-label>
+    <ion-input
+      type="number"
+      [value]="php200"
+      (input)="php200=$event.target.value"
+      placeholder="0.00"
+      (keyup)="recalculateAll()"
+    ></ion-input>
+    <ion-label>{{totalphp200 | currency:'Php '}}</ion-label>
+  </ion-item>
+  <ion-item>
+    <ion-label>No of 100 Php&nbsp;&nbsp;&nbsp;:</ion-label>
+    <ion-input
+      type="number"
+      [value]="php100"
+      (input)="php100=$event.target.value"
+      placeholder="0.00"
+      (keyup)="recalculateAll()"
+    ></ion-input>
+    <ion-label>{{totalphp100 | currency:'Php '}}</ion-label>
+  </ion-item>
+  <ion-item>
+    <ion-label>No of 50 Php&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</ion-label>
+    <ion-input
+      type="number"
+      [value]="php50"
+      (input)="php50=$event.target.value"
+      placeholder="0.00"
+      (keyup)="recalculateAll()"
+    ></ion-input>
+    <ion-label>{{totalphp50 | currency:'Php '}}</ion-label>
+  </ion-item>
+  <ion-item>
+    <ion-label>No of 20 Php&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</ion-label>
+    <ion-input
+      type="number"
+      [value]="php20"
+      (input)="php20=$event.target.value"
+      placeholder="0.00"
+      (keyup)="recalculateAll()"
+    ></ion-input>
+    <ion-label>{{totalphp20 | currency:'Php '}}</ion-label>
+  </ion-item>
+  <ion-item>
+    <ion-label>No of 10 Php&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</ion-label>
+    <ion-input
+      type="number"
+      [value]="php10"
+      (input)="php10=$event.target.value"
+      placeholder="0.00"
+      (keyup)="recalculateAll()"
+    ></ion-input>
+    <ion-label>{{totalphp10 | currency:'Php '}}</ion-label>
+  </ion-item>
+  <ion-item>
+    <ion-label
+      >No of 5 Php&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</ion-label
+    >
+    <ion-input
+      type="number"
+      [value]="php5"
+      (input)="php5=$event.target.value"
+      placeholder="0.00"
+      (keyup)="recalculateAll()"
+    ></ion-input>
+    <ion-label>{{totalphp5 | currency:'Php '}}</ion-label>
+  </ion-item>
+  <ion-item>
+    <ion-label
+      >No of 1 Php&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</ion-label
+    >
+    <ion-input
+      type="number"
+      [value]="php1"
+      (input)="php1=$event.target.value"
+      placeholder="0.00"
+      (keyup)="recalculateAll()"
+    ></ion-input>
+    <ion-label>{{totalphp1 | currency:'Php '}}</ion-label>
+  </ion-item>
+  <ion-item>
+    <ion-label>No of 1 Cent&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</ion-label>
+    <ion-input
+      type="number"
+      [value]="cent1"
+      (input)="cent1=$event.target.value"
+      placeholder="0.00"
+      (keyup)="recalculateAll()"
+    ></ion-input>
+    <ion-label>{{totalcent1 | currency:'Cents '}}</ion-label>
+  </ion-item>
+  <ion-item>
+    <ion-label position="stacked">Comments :</ion-label>
+    <ion-textarea
+      placeholder="Comments"
+      [value]="comment"
+      (input)="comment=$event.target.value"
+    ></ion-textarea>
+  </ion-item>
+  <ion-item>
+    <ion-label
+      >TOTAL CONFIRMED : {{totalconfirmed | currency:'Php '}}</ion-label
+    >
+  </ion-item>
+</ion-content>
+<ion-footer>
+  <ion-toolbar>
+    <ion-button
+      color="primary"
+      expand="block"
+      (click)="confirmTender()"
+      [disabled]="isConfirmed === true"
+      >Confirm</ion-button
+    >
+    <ion-button
+      color="success"
+      expand="block"
+      [disabled]="isConfirmed === false"
+      (click)="printTender()"
+      >Print</ion-button
+    >
+    <ion-button
+      color="secondary"
+      expand="block"
+      [disabled]="isConfirmed === false"
+      (click)="goBack()"
+      >Back To Home</ion-button
+    >
+  </ion-toolbar>
+</ion-footer>

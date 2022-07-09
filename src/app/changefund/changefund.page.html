@@ -1,0 +1,21 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Change Fund</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <ion-label floating>Change Fund:</ion-label>
+    <ion-input type="number" class="ion-text-right" placeholder="Change Fund"
+    [value]="changefund"
+    (input)="changefund=$event.target.value"
+    placeholder="0.00"
+    ></ion-input>
+  </ion-item>
+</ion-content>
+<ion-footer>
+  <ion-toolbar>
+    <ion-button color="success" expand="block" (click)="confirmChangeFund()">Confirm</ion-button>
+  </ion-toolbar>
+</ion-footer>

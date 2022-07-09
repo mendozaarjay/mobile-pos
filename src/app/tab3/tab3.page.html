@@ -1,8 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Settings
-    </ion-title>
+    <ion-title> Settings </ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -34,6 +32,16 @@
     <ion-label>Accreditation</ion-label>
     <ion-datetime placeholder="Accreditation"></ion-datetime>
   </ion-item>
+  <ion-item>
+    <p><i>This will reset the handheld data in the database.</i></p>
+  </ion-item>
+  <ion-row>
+    <ion-col>
+      <ion-button color="danger" expand="block" (click)="showWarning()"
+        >Reset Handheld</ion-button
+      >
+    </ion-col>
+  </ion-row>
 </ion-content>
 <ion-footer>
   <ion-toolbar>

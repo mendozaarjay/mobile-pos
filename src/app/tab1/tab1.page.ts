@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Printer, PrintOptions } from '@ionic-native/printer/ngx';
 import { LoadingController } from '@ionic/angular';
 import { Constants } from '../config/constants';
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
@@ -14,7 +14,8 @@ export class Tab1Page implements OnInit {
     private printer: Printer,
     private httpClient: HttpClient,
     public loadingController: LoadingController,
-    private constant: Constants
+    private constant: Constants,
+    private router: Router
   ) {}
   ngOnInit() {}
 
@@ -59,5 +60,26 @@ export class Tab1Page implements OnInit {
     this.httpClient.get<any>(baseUrl).subscribe((readingdata) => {
       console.log(readingdata);
     });
+    this.checkTenderDeclaration();
+  }
+  async checkTenderDeclaration() {
+    const baseUrl =
+      this.constant.apiEndPoint +
+      '/ticket/checktenderdeclaration?id=' +
+      this.constant.userId +
+      '&gateid=' +
+      this.constant.gateId;
+
+    this.httpClient.get<any>(baseUrl).subscribe(
+      (result) => {
+        console.log(result);
+        if (result.WithTender === false) {
+          this.router.navigateByUrl('/tenderdeclaration');
+        }
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
   }
 }

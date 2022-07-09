@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterContentInit, Component, OnInit } from '@angular/core';
 import { LoadingController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { Constants } from '../config/constants';
@@ -8,6 +8,8 @@ import { AlertController } from '@ionic/angular';
 import { PrintService } from '../services/print.service';
 import EscPosEncoder from 'esc-pos-encoder-ionic';
 import { commands } from '../services/printer-commands';
+import { DiscountType } from '../models/DiscountType';
+import { TransactionType } from '../models/TransactionType';
 @Component({
   selector: 'app-issueor',
   templateUrl: './issueor.page.html',
@@ -23,14 +25,21 @@ export class IssueorPage implements OnInit {
   duration: string = '';
   parkerTypeId: string = '';
   parkerType: ParkerType[] = [];
-  defaultParkerType: string = '';
+  discountTypes: DiscountType[] = [];
+  transactionTypes: TransactionType[] = [];
+  transactionTypeId: string;
+  defaultParkerType: string = '0';
+  defaulttransactionTypeId: string = '0';
+  discountTypeId: number = 0;
   tenderamount: number = 0;
-  discount: number;
+  isDiscountDisabled: boolean = true;
+  discount: number = 0;
   vat: number;
   fee: number;
   change: number;
   totalamount: number;
-
+  reference: string = '';
+  isrefenable: boolean = false;
   constructor(
     public loadingController: LoadingController,
     private httpClient: HttpClient,
@@ -40,17 +49,23 @@ export class IssueorPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.getParkerTypes();
-    this.defaultParkerType = '1';
+    setTimeout(() => {
+      this.getParkerTypes();
+      this.getDiscountType();
+      this.getTransactionType();
+    }, 1000);
+
     this.tenderamount = Number(this.tenderamount.toFixed(2));
   }
+
   loadParkerTypes(): Observable<any> {
     const baseUrl = this.constant.apiEndPoint + '/ticket/parkertypes';
     return this.httpClient.get<any>(baseUrl);
   }
-  getParkerTypes() {
+  async getParkerTypes() {
+    this.parkerType = [];
     const baseUrl = this.constant.apiEndPoint + '/ticket/parkertypes';
-    this.httpClient.get<any>(baseUrl).subscribe((res) => {
+    return this.httpClient.get<any>(baseUrl).subscribe((res) => {
       res.forEach((element) => {
         const newItem = new ParkerType();
         newItem.id = element.Id;
@@ -59,13 +74,41 @@ export class IssueorPage implements OnInit {
         newItem.vat = element.Vat;
         newItem.isDefault = element.IsDefault;
         if (newItem.isDefault === true) {
-          this.defaultParkerType = newItem.id;
+          this.constant.defaultParkerType = element.Id;
+          this.defaultParkerType = element.Id;
         }
         this.parkerType.push(newItem);
       });
     });
   }
+  async getDiscountType() {
+    const baseUrl = this.constant.apiEndPoint + '/ticket/getdiscounttypes';
+    this.httpClient.get<any>(baseUrl).subscribe((res) => {
+      res.forEach((element) => {
+        const newItem = new DiscountType();
+        newItem.id = element.Id;
+        newItem.name = element.Name;
+        newItem.amount = element.Amount;
+        newItem.type = element.Type;
+        this.discountTypes.push(newItem);
+      });
+    });
+  }
+  async getTransactionType() {
+    const baseUrl = this.constant.apiEndPoint + '/ticket/gettransactiontypes';
+    this.httpClient.get<any>(baseUrl).subscribe((res) => {
+      res.forEach((element) => {
+        const newItem = new TransactionType();
+        newItem.id = element.Id;
+        newItem.name = element.Name;
+        this.transactionTypes.push(newItem);
+        this.defaulttransactionTypeId = this.constant.defaultTransactionType;
+        this.transactionTypeId = this.constant.defaultTransactionType;
+      });
+    });
+  }
   async computeRate() {
+    console.log(this.discount);
     const baseUrl =
       this.constant.apiEndPoint +
       '/ticket/calculaterate?transitid=' +
@@ -99,13 +142,15 @@ export class IssueorPage implements OnInit {
     }
 
     this.httpClient.get<any>(baseUrl).subscribe((data) => {
-      this.totalamount = data.Amount;
-      this.fee = data.Amount;
-      const computedVat = (data.Amount * 0.12) / 1.12;
+      this.totalamount = data.Amount - this.discount;
+      this.fee = data.Amount - this.discount;
+      console.log(this.totalamount);
+      console.log(this.fee);
+      const computedVat = (this.totalamount * 0.12) / 1.12;
       this.vat = computedVat;
 
       if (this.tenderamount > 0) {
-        this.change = this.tenderamount - data.Amount;
+        this.change = this.tenderamount - this.totalamount;
       }
     });
   }
@@ -119,7 +164,30 @@ export class IssueorPage implements OnInit {
 
     const { role, data } = await loading.onDidDismiss();
   }
+  checkRefence(): boolean {
+    const ref = this.reference.replace(' ', '');
+    if (ref.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
   async printOfficialReceipt() {
+    console.log(this.isrefenable);
+    console.log(this.transactionTypeId);
+    console.log('refeernce' + this.reference + '|asd');
+    if (this.isrefenable && this.checkRefence() === false) {
+      console.log('why pumasok dito');
+      const alert = await this.alertController.create({
+        cssClass: 'my-custom-class',
+        header: 'Cannot Continue',
+        message: 'Please provide cashless reference type.',
+        buttons: ['OK'],
+      });
+      await alert.present();
+      return;
+    }
+
     const loading = await this.loadingController.create({
       cssClass: 'my-custom-class',
       message: 'Please wait while printing official receipt...',
@@ -151,11 +219,20 @@ export class IssueorPage implements OnInit {
       this.totalamount +
       '&' +
       'userid=' +
-      this.constant.userId;
+      this.constant.userId +
+      '&discountid=' +
+      this.discountTypeId +
+      '&discountamount=' +
+      this.discount +
+      '&cashlesstype=' +
+      this.transactionTypeId +
+      '&cashlessreference=' +
+      this.reference;
     this.httpClient.get<any>(baseUrl).subscribe(
       (result) => {
         console.log(result.Printable);
         this.printData(result.Printable);
+        this.loadDefault();
       },
       (error) => {
         console.log(error);
@@ -188,8 +265,43 @@ export class IssueorPage implements OnInit {
   tenderAmountChanged(event: any) {
     const inputAmount = event.target.value;
     this.change = inputAmount - this.fee;
+    this.change = this.change - this.discount;
+    this.calculateDiscount();
+  }
+  discountChanged(event: any) {
+    const id = event.target.value;
+    if (id === '0' || id === 0) {
+      this.isDiscountDisabled = true;
+      this.discount = 0;
+    } else {
+      this.isDiscountDisabled = true;
+      this.calculateDiscount();
+    }
+    this.computeRate();
   }
 
+  calculateDiscount() {
+    if (this.discountTypeId !== 0) {
+      const selected = this.discountTypes.find(
+        (a) => a.id === this.discountTypeId
+      );
+      if (selected.type === 1) {
+        this.discount = selected.amount;
+      } else {
+        this.discount = (selected.amount / this.totalamount) * 100;
+      }
+    }
+  }
+  typeChanged(event: any) {
+    const id = event.target.value;
+    console.log(id);
+    if (id === '0' || id === 0) {
+      this.isrefenable = false;
+    } else {
+      this.isrefenable = true;
+    }
+    console.log(this.isrefenable);
+  }
   loadDefault() {
     this.verifiedTicketNo = '';
     this.plateNo = '';
@@ -197,6 +309,7 @@ export class IssueorPage implements OnInit {
     this.timeOut = '';
     this.duration = '';
     this.id = '0';
+    this.reference = '';
   }
   async printData(printingdata) {
     const encoder = new EscPosEncoder();
@@ -214,6 +327,9 @@ export class IssueorPage implements OnInit {
       .raw(commands.TEXT_FORMAT.TXT_NORMAL)
       .newline()
       .newline();
-    this.print.sendToBluetoothPrinter(this.constant.bluetoothAddress, result.encode());
+    this.print.sendToBluetoothPrinter(
+      this.constant.bluetoothAddress,
+      result.encode()
+    );
   }
 }

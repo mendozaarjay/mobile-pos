@@ -40,12 +40,12 @@ export class LoginPage implements OnInit {
       this.constants.gateId;
     this.httpClient.get<any>(baseUrl).subscribe(
       (res) => {
-        console.log(res);
         if (res.IsValid === false) {
           this.showLoginError();
         } else {
+          console.log(res);
           this.constants.userId = res.Id;
-          this.router.navigateByUrl('/home');
+          this.checkChangeFund(this.constants.userId);
         }
       },
       (error) => {
@@ -72,5 +72,38 @@ export class LoginPage implements OnInit {
     });
     await alert.present();
   }
-
+  async checkChangeFund(userid: any) {
+    const baseUrl =
+      this.constants.apiEndPoint +
+      '/ticket/checkchangefund?userid=' +
+      userid +
+      '&gateid=' +
+      this.constants.gateId;
+    this.httpClient.get<any>(baseUrl).subscribe(
+      (result) => {
+        console.log(result);
+        this.constants.cashierShiftId = result.Id;
+        this.getParkerTypes();
+        if (result.WithChangeFund === true) {
+          this.router.navigateByUrl('/home');
+        } else {
+          this.router.navigateByUrl('/changefund');
+        }
+      },
+      (error) => {
+        console.log(error);
+        this.printError(error);
+      }
+    );
+  }
+  async getParkerTypes() {
+    const baseUrl = this.constants.apiEndPoint + '/ticket/parkertypes';
+    this.httpClient.get<any>(baseUrl).subscribe((res) => {
+      res.forEach((element) => {
+        if (element.isDefault === true) {
+          this.constants.defaultParkerType = element.Id;
+        }
+      });
+    });
+  }
 }
