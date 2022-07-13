@@ -136,6 +136,7 @@ export class TenderdeclarationPage implements OnInit {
   }
 
   async printData(header, printingdata) {
+    this.logOut();
     const loading = await this.loadingController.create({
       cssClass: 'my-custom-class',
       message: 'Please wait while printing tender declaration...',
@@ -169,4 +170,16 @@ export class TenderdeclarationPage implements OnInit {
   async goBack() {
     this.router.navigateByUrl('/home');
   }
+  async logOut() {
+    const baseUrl =
+    this.constant.apiEndPoint +
+    '/ticket/signout?userid=' +
+    this.constant.userId +
+    '&gateid=' +
+    this.constant.gateId;
+
+  this.httpClient.get<any>(baseUrl).subscribe((readingdata) => {
+    console.log(readingdata);
+  });
+}
 }

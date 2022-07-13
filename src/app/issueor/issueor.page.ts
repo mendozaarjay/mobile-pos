@@ -312,6 +312,7 @@ export class IssueorPage implements OnInit {
     this.reference = '';
   }
   async printData(printingdata) {
+    console.log(printingdata);
     const encoder = new EscPosEncoder();
     const result = encoder.initialize();
 
