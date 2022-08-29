@@ -33,12 +33,16 @@ export class PrintService {
           (err) => {
             //If there is an error printing to bluetooth printer
             //handle it here
+            alert(err);
+            console.log(err);
           }
         );
       },
       (err) => {
         //If there is an error connecting to bluetooth printer
         //handle it here
+        alert(err);
+        console.log(err);
       }
     );
   }

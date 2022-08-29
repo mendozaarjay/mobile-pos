@@ -10,6 +10,12 @@ import { Device } from '@ionic-native/device/ngx';
 import { PrintService } from '../services/print.service';
 import EscPosEncoder from 'esc-pos-encoder-ionic';
 import { commands } from '../services/printer-commands';
+import {
+  PrinterToUse,
+  ThermalPrinterPlugin,
+} from 'thermal-printer-cordova-plugin/src';
+// eslint-disable-next-line @typescript-eslint/naming-convention, no-var
+declare let ThermalPrinter: ThermalPrinterPlugin;
 @Component({
   selector: 'app-changefund',
   templateUrl: './changefund.page.html',
@@ -25,7 +31,7 @@ export class ChangefundPage implements OnInit {
     public loadingController: LoadingController,
     private printer: Printer,
     private device: Device,
-    public print: PrintService,
+    public print: PrintService
   ) {}
 
   ngOnInit() {}
@@ -85,28 +91,19 @@ export class ChangefundPage implements OnInit {
       duration: 3000,
     });
     await loading.present();
-    const encoder = new EscPosEncoder();
-    const result = encoder.initialize();
-
-    result
-      .codepage('cp936')
-      .align('center')
-      .raw(commands.TEXT_FORMAT.TXT_NORMAL)
-      .line(header)
-      .align('left')
-      .line(printingdata)
-      .raw(commands.TEXT_FORMAT.TXT_NORMAL)
-      .text(commands.HORIZONTAL_LINE.HR_58MM)
-      .text(commands.HORIZONTAL_LINE.HR2_58MM)
-      .newline()
-      .raw(commands.TEXT_FORMAT.TXT_NORMAL)
-      .newline()
-      .newline();
-    this.print.sendToBluetoothPrinter(
-      this.constants.bluetoothAddress,
-      result.encode()
+    ThermalPrinter.printFormattedText(
+      {
+        type: 'bluetooth',
+        id: this.constants.bluetoothAddress,
+        text: printingdata,
+      },
+      function () {
+        console.log('Successfully printed!');
+      },
+      function (error) {
+        console.error('Printing error', error);
+      }
     );
-    console.log(result);
     const { role, data } = await loading.onDidDismiss();
   }
 }

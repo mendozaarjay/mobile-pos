@@ -8,6 +8,12 @@ import { Device } from '@ionic-native/device/ngx';
 import { PrintService } from '../services/print.service';
 import EscPosEncoder from 'esc-pos-encoder-ionic';
 import { commands } from '../services/printer-commands';
+import {
+  PrinterToUse,
+  ThermalPrinterPlugin,
+} from 'thermal-printer-cordova-plugin/src';
+// eslint-disable-next-line @typescript-eslint/naming-convention, no-var
+declare let ThermalPrinter: ThermalPrinterPlugin;
 @Component({
   selector: 'app-issueticket',
   templateUrl: './issueticket.page.html',
@@ -76,26 +82,18 @@ export class IssueticketPage implements OnInit {
     });
   }
   async printTicketNo(printingdata, ticketno) {
-    const encoder = new EscPosEncoder();
-    const result = encoder.initialize();
-
-    result
-      .codepage('cp936')
-      .align('center')
-      .raw(commands.TEXT_FORMAT.TXT_NORMAL)
-      .line(printingdata)
-      .raw(commands.TEXT_FORMAT.TXT_NORMAL)
-      .text(commands.HORIZONTAL_LINE.HR_58MM)
-      .text(commands.HORIZONTAL_LINE.HR2_58MM)
-      .newline()
-      .raw(commands.TEXT_FORMAT.TXT_NORMAL)
-      .newline()
-      .qrcode(ticketno)
-      .newline()
-      .newline();
-    this.print.sendToBluetoothPrinter(
-      this.constant.bluetoothAddress,
-      result.encode()
+    ThermalPrinter.printFormattedText(
+      {
+        type: 'bluetooth',
+        id: this.constant.bluetoothAddress,
+        text: printingdata,
+      },
+      function () {
+        console.log('Successfully printed!');
+      },
+      function (error) {
+        console.error('Printing error', error);
+      }
     );
   }
 }

@@ -10,6 +10,12 @@ import EscPosEncoder from 'esc-pos-encoder-ionic';
 import { commands } from '../services/printer-commands';
 import { Router } from '@angular/router';
 import { OfficialReceipt } from '../models/OfficialReceipt';
+import {
+  PrinterToUse,
+  ThermalPrinterPlugin,
+} from 'thermal-printer-cordova-plugin/src';
+// eslint-disable-next-line @typescript-eslint/naming-convention, no-var
+declare let ThermalPrinter: ThermalPrinterPlugin;
 @Component({
   selector: 'app-reprintor',
   templateUrl: './reprintor.page.html',
@@ -60,27 +66,29 @@ export class ReprintorPage implements OnInit {
       id;
     this.httpClient.get<any>(baseUrl).subscribe((data) => {
       console.log(data.Printable);
+      this.printData(1,data.Printable);
     });
   }
-  async printData(printingdata) {
-    const encoder = new EscPosEncoder();
-    const result = encoder.initialize();
-
-    result
-      .codepage('cp936')
-      .align('center')
-      .raw(commands.TEXT_FORMAT.TXT_NORMAL)
-      .line(printingdata)
-      .raw(commands.TEXT_FORMAT.TXT_NORMAL)
-      .text(commands.HORIZONTAL_LINE.HR_58MM)
-      .text(commands.HORIZONTAL_LINE.HR2_58MM)
-      .newline()
-      .raw(commands.TEXT_FORMAT.TXT_NORMAL)
-      .newline()
-      .newline();
-    this.print.sendToBluetoothPrinter(
-      this.constant.bluetoothAddress,
-      result.encode()
+  async printData(header, printingdata) {
+    const loading = await this.loadingController.create({
+      cssClass: 'my-custom-class',
+      message: 'Please wait while printing official receipt...',
+      duration: 3000,
+    });
+    await loading.present();
+    ThermalPrinter.printFormattedText(
+      {
+        type: 'bluetooth',
+        id: this.constant.bluetoothAddress,
+        text: printingdata,
+      },
+      function () {
+        console.log('Successfully printed!');
+      },
+      function (error) {
+        console.error('Printing error', error);
+      }
     );
+    const { role, data } = await loading.onDidDismiss();
   }
 }

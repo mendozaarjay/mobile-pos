@@ -5,9 +5,20 @@
 </ion-header>
 
 <ion-content>
-<ion-row>
-  <ion-item>
-    <ion-button primary (click)="printTicket()">TEST</ion-button>
-  </ion-item>
-</ion-row>
+  <ion-list>
+    <ion-item
+      *ngFor="let item of bluetoothList"
+      (click)="selectPrinter(item.id)"
+    >
+      {{item.name}} {{item.id}}
+    </ion-item>
+  </ion-list>
+  <div>Selected Printer: {{selectedPrinter}}</div>
+  <ion-button
+    class="largebutton"
+    color="secondary"
+    expand="full"
+    (click)="printTicket()"
+    >PRINT TEST</ion-button
+  >
 </ion-content>

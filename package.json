@@ -79,8 +79,12 @@
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.5.0",
     "protractor": "~7.0.0",
+    "thermal-printer-cordova-plugin": "^1.0.6",
     "ts-node": "~8.3.0",
     "typescript": "~4.2.4"
+  },
+  "cordova": {
+    "thermal-printer-cordova-plugin": {}
   },
   "description": "An Ionic project"
 }

@@ -9,6 +9,12 @@ import { PrintService } from '../services/print.service';
 import EscPosEncoder from 'esc-pos-encoder-ionic';
 import { commands } from '../services/printer-commands';
 import { Router } from '@angular/router';
+import {
+  PrinterToUse,
+  ThermalPrinterPlugin,
+} from 'thermal-printer-cordova-plugin/src';
+// eslint-disable-next-line @typescript-eslint/naming-convention, no-var
+declare let ThermalPrinter: ThermalPrinterPlugin;
 @Component({
   selector: 'app-tenderdeclaration',
   templateUrl: './tenderdeclaration.page.html',
@@ -146,25 +152,19 @@ export class TenderdeclarationPage implements OnInit {
     const encoder = new EscPosEncoder();
     const result = encoder.initialize();
 
-    result
-      .codepage('cp936')
-      .align('center')
-      .raw(commands.TEXT_FORMAT.TXT_NORMAL)
-      .line(header)
-      .align('left')
-      .line(printingdata)
-      .raw(commands.TEXT_FORMAT.TXT_NORMAL)
-      .text(commands.HORIZONTAL_LINE.HR_58MM)
-      .text(commands.HORIZONTAL_LINE.HR2_58MM)
-      .newline()
-      .raw(commands.TEXT_FORMAT.TXT_NORMAL)
-      .newline()
-      .newline();
-    this.print.sendToBluetoothPrinter(
-      this.constant.bluetoothAddress,
-      result.encode()
+    ThermalPrinter.printFormattedText(
+      {
+        type: 'bluetooth',
+        id: this.constant.bluetoothAddress,
+        text: printingdata,
+      },
+      function () {
+        console.log('Successfully printed!');
+      },
+      function (error) {
+        console.error('Printing error', error);
+      }
     );
-    console.log(result);
     const { role, data } = await loading.onDidDismiss();
   }
   async goBack() {
@@ -172,14 +172,14 @@ export class TenderdeclarationPage implements OnInit {
   }
   async logOut() {
     const baseUrl =
-    this.constant.apiEndPoint +
-    '/ticket/signout?userid=' +
-    this.constant.userId +
-    '&gateid=' +
-    this.constant.gateId;
+      this.constant.apiEndPoint +
+      '/ticket/signout?userid=' +
+      this.constant.userId +
+      '&gateid=' +
+      this.constant.gateId;
 
-  this.httpClient.get<any>(baseUrl).subscribe((readingdata) => {
-    console.log(readingdata);
-  });
-}
+    this.httpClient.get<any>(baseUrl).subscribe((readingdata) => {
+      console.log(readingdata);
+    });
+  }
 }

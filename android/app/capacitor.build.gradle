@@ -16,7 +16,7 @@ dependencies {
     implementation project(':capacitor-status-bar')
     implementation "com.android.support:support-v4:28.+"
 }
-
+apply from: "../../node_modules/thermal-printer-cordova-plugin/src/android/build.gradle"
 
 if (hasProperty('postBuildExtras')) {
   postBuildExtras()
