@@ -9,6 +9,8 @@
   top: 50%;
   transform: translate(-50%, -50%);
   width: 300px;
+  --background: transparent;
+  --ion-background-color: transparent;
 }
 .scan-button {
   margin: 0px;
@@ -18,3 +20,8 @@
   height: 50px;
   z-index: 11;
 }
+.scanner-active {
+  --background: transparent;
+  --ion-background-color: transparent;
+}
+

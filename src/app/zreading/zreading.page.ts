@@ -1,46 +1,37 @@
 import { Component, OnInit } from '@angular/core';
 import { LoadingController } from '@ionic/angular';
-import { PrintService } from '../services/print.service';
-import EscPosEncoder from 'esc-pos-encoder-ionic';
-import { commands } from '../services/printer-commands';
-import { HttpClient } from '@angular/common/http';
-import { Constants } from '../config/constants';
-import {
-  PrinterToUse,
-  ThermalPrinterPlugin,
-} from 'thermal-printer-cordova-plugin/src';
-// eslint-disable-next-line @typescript-eslint/naming-convention, no-var
-declare let ThermalPrinter: ThermalPrinterPlugin;
+import { AuditLogService } from '../services/audit-log.service';
+import { DynamicPrinterService } from '../services/dynamic-printer.service';
+import { ReadingsService } from '../services/readings.service';
+
 @Component({
   selector: 'app-zreading',
   templateUrl: './zreading.page.html',
   styleUrls: ['./zreading.page.scss'],
 })
 export class ZreadingPage implements OnInit {
-  sRNo: string;
+  srNo: string;
   constructor(
     public loadingController: LoadingController,
-    public print: PrintService,
-    private httpClient: HttpClient,
-    private constant: Constants
+    private service: ReadingsService,
+    private printer: DynamicPrinterService,
+    private auditLogs: AuditLogService
   ) {}
   ngOnInit() {
     this.loadZReading();
   }
 
   loadZReading() {
-    const baseUrl =
-      this.constant.apiEndPoint +
-      '/ticket/zreadingtoday?gateid=' +
-      this.constant.gateId;
-
-    this.httpClient.get<any>(baseUrl).subscribe((readingdata) => {
-      if (readingdata.length > 0) {
-        this.sRNo = readingdata;
+    this.service.loadGeneratedZReading().subscribe((data) => {
+      if (data.length > 0) {
+        this.srNo = data;
       }
     });
   }
   async performZReading() {
+    this.auditLogs
+      .buttonClicked('Perform Z Reading Button')
+      .subscribe((a) => {});
     const loading = await this.loadingController.create({
       cssClass: 'my-custom-class',
       message: 'Please wait while creating Z reading...',
@@ -48,56 +39,29 @@ export class ZreadingPage implements OnInit {
     });
 
     await loading.present();
-    const baseUrl =
-      this.constant.apiEndPoint +
-      '/ticket/performzreading?gateid=' +
-      this.constant.gateId +
-      '&userid=' +
-      this.constant.userId;
-
-    this.httpClient.get<any>(baseUrl).subscribe((readingdata) => {
-      this.sRNo = readingdata;
+    this.service.performZReading().subscribe((readingdata) => {
+      this.srNo = readingdata;
     });
     const { role, data } = await loading.onDidDismiss();
   }
 
   async printZReading() {
-    const baseUrl =
-      this.constant.apiEndPoint +
-      '/ticket/zreading?gateid=' +
-      this.constant.gateId +
-      '&srno=' +
-      this.sRNo +
-      '&userid=' +
-      this.constant.userId;
-
-    this.httpClient.get<any>(baseUrl).subscribe((readingdata) => {
-      console.log(readingdata.Header);
-      console.log(readingdata.Body);
-      this.printData(readingdata.Header, readingdata.Body);
+    this.auditLogs
+      .buttonClicked('Print Z Reading Button')
+      .subscribe((a) => {});
+    this.service.getZReadingPrintable(this.srNo).subscribe((data) => {
+      this.printData(data.Body);
     });
   }
 
-  async printData(header, printingdata) {
+  async printData(reading: string) {
     const loading = await this.loadingController.create({
       cssClass: 'my-custom-class',
       message: 'Please wait while printing Z reading...',
       duration: 3000,
     });
     await loading.present();
-    ThermalPrinter.printFormattedText(
-      {
-        type: 'bluetooth',
-        id: this.constant.bluetoothAddress,
-        text: printingdata,
-      },
-      function () {
-        console.log('Successfully printed!');
-      },
-      function (error) {
-        console.error('Printing error', error);
-      }
-    );
+    this.printer.print(reading);
     const { role, data } = await loading.onDidDismiss();
   }
 }

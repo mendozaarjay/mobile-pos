@@ -1,0 +1,71 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Readings</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title>Readings</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <br />
+  <ion-item>
+    <ion-label>Search Term:</ion-label>
+    <ion-input
+      type="text"
+      placeholder="Reference No"
+      [value]="keyword"
+      (input)="keyword=$event.target.value.toLocaleUpperCase()"
+    ></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Reading Type:</ion-label>
+    <ion-select
+      id="parkerTypeId"
+      [(ngModel)]="readingType"
+      (ionChange)="typeChanged()"
+    >
+      <ion-select-option value="XR">X Reading</ion-select-option>
+      <ion-select-option value="YR">Y Reading</ion-select-option>
+      <ion-select-option value="ZR">Z Reading</ion-select-option>
+    </ion-select>
+  </ion-item>
+  <ion-row>
+    <ion-col>
+      <ion-button color="primary" expand="block" (click)="loadData()"
+        >Search</ion-button
+      >
+    </ion-col>
+  </ion-row>
+
+  <ion-list>
+    <ion-list-header
+      ><h2 *ngIf="readingTitle.length > 0">
+        Search Result for {{readingTitle}} : {{readingItems.length}}
+      </h2></ion-list-header
+    >
+    <ion-item *ngFor="let item of readingItems">
+      <ion-col>
+        <ion-label>
+          <h3>SR No: {{item.ReferenceNo}}</h3>
+          <p>Gate : {{item.Gate}}</p>
+          <p>Start Date : {{item.StartDate}}</p>
+          <p>End Date :{{item.EndDate}}</p>
+        </ion-label>
+      </ion-col>
+      <ion-col size="3">
+        <ion-button
+          expand="block"
+          color="success"
+          (click)="reprintReading(item.ReferenceNo, item.Type)"
+          >Reprint</ion-button
+        >
+      </ion-col>
+    </ion-item>
+  </ion-list>
+</ion-content>

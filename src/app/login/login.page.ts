@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Constants } from '../config/constants';
 import { AlertController } from '@ionic/angular';
+import { UserLogInService } from '../services/user-log-in.service';
+import { AuditLogService } from '../services/audit-log.service';
 
 @Component({
   selector: 'app-login',
@@ -10,46 +11,38 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
-  username: string = '';
-  password: string = '';
+  username = '';
+  password = '';
 
   constructor(
     private router: Router,
-    private httpClient: HttpClient,
     private constants: Constants,
-    public alertController: AlertController
+    public alertController: AlertController,
+    private service: UserLogInService,
+    private auditLogs: AuditLogService
   ) {}
 
   ngOnInit() {}
 
-  async SignIn() {
-    this.router.navigateByUrl('/home');
-  }
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   async SignInNew() {
     if (this.username === '' || this.password === '') {
       this.showLoginError();
       return;
     }
-    const baseUrl =
-      this.constants.apiEndPoint +
-      '/ticket/isvaliduser?username=' +
-      this.username +
-      '&password=' +
-      this.password +
-      '&gateid=' +
-      this.constants.gateId;
-    this.httpClient.get<any>(baseUrl).subscribe(
-      (res) => {
-        if (res.IsValid === false) {
+    this.service.checkUser(this.username, this.password).subscribe(
+      (result) => {
+        if (!result.IsValid) {
+          this.auditLogs.userLoginError(this.username).subscribe((a) => {});
           this.showLoginError();
         } else {
-          console.log(res);
-          this.constants.userId = res.Id;
-          this.checkChangeFund(this.constants.userId);
+          this.constants.userId = result.Id;
+          this.constants.username = result.Name;
+          this.auditLogs.userLogin(this.username).subscribe((a) => {});
+          this.checkChangeFund(result.Id);
         }
       },
       (error) => {
-        console.log(error);
         this.printError(error);
       }
     );
@@ -73,17 +66,10 @@ export class LoginPage implements OnInit {
     await alert.present();
   }
   async checkChangeFund(userid: any) {
-    const baseUrl =
-      this.constants.apiEndPoint +
-      '/ticket/checkchangefund?userid=' +
-      userid +
-      '&gateid=' +
-      this.constants.gateId;
-    this.httpClient.get<any>(baseUrl).subscribe(
+    this.service.checkChangeFund(userid).subscribe(
       (result) => {
-        console.log(result);
         this.constants.cashierShiftId = result.Id;
-        this.getParkerTypes();
+        this.service.setParkingTypes();
         if (result.WithChangeFund === true) {
           this.router.navigateByUrl('/home');
         } else {
@@ -95,15 +81,5 @@ export class LoginPage implements OnInit {
         this.printError(error);
       }
     );
-  }
-  async getParkerTypes() {
-    const baseUrl = this.constants.apiEndPoint + '/ticket/parkertypes';
-    this.httpClient.get<any>(baseUrl).subscribe((res) => {
-      res.forEach((element) => {
-        if (element.isDefault === true) {
-          this.constants.defaultParkerType = element.Id;
-        }
-      });
-    });
   }
 }

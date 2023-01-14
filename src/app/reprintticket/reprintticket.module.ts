@@ -4,17 +4,17 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { PrintticketPageRoutingModule } from './printticket-routing.module';
+import { ReprintticketPageRoutingModule } from './reprintticket-routing.module';
 
-import { PrintticketPage } from './printticket.page';
+import { ReprintticketPage } from './reprintticket.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    PrintticketPageRoutingModule
+    ReprintticketPageRoutingModule
   ],
-  declarations: [PrintticketPage]
+  declarations: [ReprintticketPage]
 })
-export class PrintticketPageModule {}
+export class ReprintticketPageModule {}

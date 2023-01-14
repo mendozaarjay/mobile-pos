@@ -4,17 +4,17 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { QrreadingPageRoutingModule } from './qrreading-routing.module';
+import { ReprintreadingsPageRoutingModule } from './reprintreadings-routing.module';
 
-import { QrreadingPage } from './qrreading.page';
+import { ReprintreadingsPage } from './reprintreadings.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    QrreadingPageRoutingModule
+    ReprintreadingsPageRoutingModule
   ],
-  declarations: [QrreadingPage]
+  declarations: [ReprintreadingsPage]
 })
-export class QrreadingPageModule {}
+export class ReprintreadingsPageModule {}

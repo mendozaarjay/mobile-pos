@@ -1,21 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { LoadingController, Platform } from '@ionic/angular';
-import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { Constants } from '../config/constants';
-import { Printer, PrintOptions } from '@awesome-cordova-plugins/printer/ngx';
-import { Device } from '@ionic-native/device/ngx';
-import { PrintService } from '../services/print.service';
-import EscPosEncoder from 'esc-pos-encoder-ionic';
-import { commands } from '../services/printer-commands';
-import { Router } from '@angular/router';
 import { OfficialReceipt } from '../models/OfficialReceipt';
-import {
-  PrinterToUse,
-  ThermalPrinterPlugin,
-} from 'thermal-printer-cordova-plugin/src';
-// eslint-disable-next-line @typescript-eslint/naming-convention, no-var
-declare let ThermalPrinter: ThermalPrinterPlugin;
+import { AuditLogService } from '../services/audit-log.service';
+import { DynamicPrinterService } from '../services/dynamic-printer.service';
+import { OfficialReceiptService } from '../services/official-receipt.service';
 @Component({
   selector: 'app-reprintor',
   templateUrl: './reprintor.page.html',
@@ -23,30 +11,23 @@ declare let ThermalPrinter: ThermalPrinterPlugin;
 })
 export class ReprintorPage implements OnInit {
   officialreceiptlist: OfficialReceipt[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   keyword: string = '';
   constructor(
     public loadingController: LoadingController,
-    private httpClient: HttpClient,
-    private constant: Constants,
-    private printer: Printer,
-    private platform: Platform,
-    private device: Device,
-    public print: PrintService,
-    private router: Router
+    private service: OfficialReceiptService,
+    private printer: DynamicPrinterService,
+    private auditLogs: AuditLogService
   ) {}
 
   ngOnInit() {}
 
   async loadData() {
+    this.auditLogs
+      .buttonClicked('Search Button - Reprint OR')
+      .subscribe((a) => {});
     this.officialreceiptlist = [];
-    const baseUrl =
-      this.constant.apiEndPoint +
-      '/ticket/searchor?gateid=' +
-      this.constant.gateId +
-      '&keyword=' +
-      this.keyword;
-
-    this.httpClient.get<any>(baseUrl).subscribe((data) => {
+    this.service.loadOfficialReceipts(this.keyword).subscribe((data) => {
       data.forEach((item) => {
         const oritem = new OfficialReceipt();
         oritem.id = item.Id;
@@ -57,38 +38,11 @@ export class ReprintorPage implements OnInit {
         this.officialreceiptlist.push(oritem);
       });
     });
-    console.log(this.officialreceiptlist);
   }
   async reprint(id: any) {
-    const baseUrl =
-      this.constant.apiEndPoint +
-      '/ticket/reprintofficialreceipt?transitid=' +
-      id;
-    this.httpClient.get<any>(baseUrl).subscribe((data) => {
-      console.log(data.Printable);
-      this.printData(1,data.Printable);
+    this.auditLogs.buttonClicked('Reprint OR').subscribe((a) => {});
+    this.service.reprintOfficialReceipt(id).subscribe((data) => {
+      this.printer.print(data.Printable);
     });
-  }
-  async printData(header, printingdata) {
-    const loading = await this.loadingController.create({
-      cssClass: 'my-custom-class',
-      message: 'Please wait while printing official receipt...',
-      duration: 3000,
-    });
-    await loading.present();
-    ThermalPrinter.printFormattedText(
-      {
-        type: 'bluetooth',
-        id: this.constant.bluetoothAddress,
-        text: printingdata,
-      },
-      function () {
-        console.log('Successfully printed!');
-      },
-      function (error) {
-        console.error('Printing error', error);
-      }
-    );
-    const { role, data } = await loading.onDidDismiss();
   }
 }

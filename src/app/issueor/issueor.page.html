@@ -1,12 +1,11 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="tabs/tab1"></ion-back-button>
+      <ion-back-button defaultHref="home"></ion-back-button>
     </ion-buttons>
     <ion-title>Official Receipt</ion-title>
   </ion-toolbar>
 </ion-header>
-
 <ion-content>
   <ion-item>
     <ion-label>Search:</ion-label>
@@ -21,12 +20,12 @@
   <ion-grid>
     <ion-row>
       <ion-col size="6">
-        <ion-button expand="block" color="light" (click)="verifyTicket()"
+        <ion-button #verify id="verify" expand="block" color="light" (click)="verifyTicket()"
           >Verify</ion-button
         >
       </ion-col>
       <ion-col size="6">
-        <ion-button expand="block" color="primary">Scan QR</ion-button>
+        <ion-button expand="block" color="primary" (click) = "openModal()">Scan QR</ion-button>
       </ion-col>
     </ion-row>
 
@@ -143,6 +142,8 @@
   <ion-item>
     <ion-label>Total Amount: {{totalamount | number : '1.2-2'}}</ion-label>
   </ion-item>
+
+
 </ion-content>
 
 <ion-footer>

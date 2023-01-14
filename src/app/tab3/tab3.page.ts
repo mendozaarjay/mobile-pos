@@ -1,15 +1,10 @@
 import { Component } from '@angular/core';
 import { LoadingController } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
 import { Constants } from '../config/constants';
-import { ParkerType } from '../models/ParkerType';
-import { Observable } from 'rxjs';
 import { AlertController } from '@ionic/angular';
-import { PrintService } from '../services/print.service';
-import EscPosEncoder from 'esc-pos-encoder-ionic';
-import { commands } from '../services/printer-commands';
-import { DiscountType } from '../models/DiscountType';
-import { TransactionType } from '../models/TransactionType';
+import { AuditLogService } from '../services/audit-log.service';
+import { SettingsService } from '../services/settings.service';
+import { GateInformation } from '../models/GateInformation';
 @Component({
   selector: 'app-tab3',
   templateUrl: 'tab3.page.html',
@@ -17,12 +12,14 @@ import { TransactionType } from '../models/TransactionType';
 })
 export class Tab3Page {
   handlerMessage: string;
+  printer: string;
+  settings: GateInformation = {} as GateInformation;
   constructor(
     public loadingController: LoadingController,
-    private httpClient: HttpClient,
     private constant: Constants,
     public alertController: AlertController,
-    public print: PrintService
+    private auditLogs: AuditLogService,
+    private service: SettingsService
   ) {}
 
   async showWarning() {
@@ -54,11 +51,8 @@ export class Tab3Page {
     }
   }
   async resetHandHeld() {
-    const baseUrl =
-      this.constant.apiEndPoint +
-      '/ticket/resetcounter?gateid=' +
-      this.constant.gateId;
-    this.httpClient.get<any>(baseUrl).subscribe((result) => {
+    this.auditLogs.buttonClicked('Reset Handheld Button');
+    this.service.resetHandled().subscribe((result) => {
       this.showMessage(result);
     });
   }
@@ -70,5 +64,11 @@ export class Tab3Page {
       buttons: ['OK'],
     });
     await alert.present();
+  }
+  ionViewWillEnter() {
+    this.printer = this.constant.bluetoothAddress;
+    this.service.getGateInfo().subscribe((data) => {
+      this.settings = data;
+    });
   }
 }

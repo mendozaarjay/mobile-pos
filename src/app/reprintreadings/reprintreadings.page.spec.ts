@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { QrreadingPage } from './qrreading.page';
+import { ReprintreadingsPage } from './reprintreadings.page';
 
-describe('QrreadingPage', () => {
-  let component: QrreadingPage;
-  let fixture: ComponentFixture<QrreadingPage>;
+describe('ReprintreadingsPage', () => {
+  let component: ReprintreadingsPage;
+  let fixture: ComponentFixture<ReprintreadingsPage>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ QrreadingPage ],
+      declarations: [ ReprintreadingsPage ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(QrreadingPage);
+    fixture = TestBed.createComponent(ReprintreadingsPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

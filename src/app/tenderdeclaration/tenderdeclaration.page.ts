@@ -1,58 +1,47 @@
 import { Component, OnInit } from '@angular/core';
 import { LoadingController, Platform } from '@ionic/angular';
-import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { Constants } from '../config/constants';
-import { Printer, PrintOptions } from '@awesome-cordova-plugins/printer/ngx';
-import { Device } from '@ionic-native/device/ngx';
-import { PrintService } from '../services/print.service';
-import EscPosEncoder from 'esc-pos-encoder-ionic';
-import { commands } from '../services/printer-commands';
 import { Router } from '@angular/router';
-import {
-  PrinterToUse,
-  ThermalPrinterPlugin,
-} from 'thermal-printer-cordova-plugin/src';
-// eslint-disable-next-line @typescript-eslint/naming-convention, no-var
-declare let ThermalPrinter: ThermalPrinterPlugin;
+import { TenderDeclarationItem } from '../models/TenderDeclarationItem';
+import { TenderDeclarationService } from '../services/tender-declaration.service';
+import { DynamicPrinterService } from '../services/dynamic-printer.service';
+import { UserLogInService } from '../services/user-log-in.service';
+import { AuditLogService } from '../services/audit-log.service';
 @Component({
   selector: 'app-tenderdeclaration',
   templateUrl: './tenderdeclaration.page.html',
   styleUrls: ['./tenderdeclaration.page.scss'],
 })
 export class TenderdeclarationPage implements OnInit {
-  php1000: number = 0;
-  php500: number = 0;
-  php200: number = 0;
-  php100: number = 0;
-  php50: number = 0;
-  php20: number = 0;
-  php10: number = 0;
-  php5: number = 0;
-  php1: number = 0;
-  cent1: number = 0;
-  totalphp1000: number = 0;
-  totalphp500: number = 0;
-  totalphp200: number = 0;
-  totalphp100: number = 0;
-  totalphp50: number = 0;
-  totalphp20: number = 0;
-  totalphp10: number = 0;
-  totalphp5: number = 0;
-  totalphp1: number = 0;
-  totalcent1: number = 0;
-  totalconfirmed: number = 0;
-  comment: string = '';
-  isConfirmed: boolean = false;
+  php1000 = 0;
+  php500 = 0;
+  php200 = 0;
+  php100 = 0;
+  php50 = 0;
+  php20 = 0;
+  php10 = 0;
+  php5 = 0;
+  php1 = 0;
+  cent1 = 0;
+  totalphp1000 = 0;
+  totalphp500 = 0;
+  totalphp200 = 0;
+  totalphp100 = 0;
+  totalphp50 = 0;
+  totalphp20 = 0;
+  totalphp10 = 0;
+  totalphp5 = 0;
+  totalphp1 = 0;
+  totalcent1 = 0;
+  totalconfirmed = 0;
+  comment = '';
+  isConfirmed = false;
   constructor(
     public loadingController: LoadingController,
-    private httpClient: HttpClient,
-    private constant: Constants,
-    private printer: Printer,
-    private platform: Platform,
-    private device: Device,
-    public print: PrintService,
-    private router: Router
+    private router: Router,
+    private service: TenderDeclarationService,
+    private printer: DynamicPrinterService,
+    private userService: UserLogInService,
+    private auditLogs: AuditLogService
   ) {}
 
   ngOnInit() {}
@@ -82,37 +71,25 @@ export class TenderdeclarationPage implements OnInit {
       totalCents;
   }
   async confirmTender() {
-    const baseUrl =
-      this.constant.apiEndPoint +
-      '/ticket/settenderdeclaration?id=' +
-      this.constant.cashierShiftId +
-      '&v1000=' +
-      this.php1000 +
-      '&v500=' +
-      this.php500 +
-      '&v200=' +
-      this.php200 +
-      '&v100=' +
-      this.php100 +
-      '&v50=' +
-      this.php50 +
-      '&v20=' +
-      this.php20 +
-      '&v10=' +
-      this.php10 +
-      '&v5=' +
-      this.php5 +
-      '&v1=' +
-      this.php1 +
-      '&vcent=' +
-      this.cent1 +
-      '&comment=' +
-      this.comment;
-
-    this.httpClient.get<any>(baseUrl).subscribe(
+    const item = new TenderDeclarationItem();
+    item.comment = this.comment;
+    item.cent1 = this.cent1;
+    item.php1 = this.php1;
+    item.php10 = this.php10;
+    item.php100 = this.php100;
+    item.php1000 = this.php1000;
+    item.php20 = this.php20;
+    item.php200 = this.php200;
+    item.php5 = this.php5;
+    item.php50 = this.php50;
+    item.php500 = this.php500;
+    this.service.confirmTender(item).subscribe(
       (result) => {
         if (result.includes('success')) {
           this.isConfirmed = true;
+          this.auditLogs
+            .confirmedTenderDeclaration(this.totalconfirmed)
+            .subscribe((a) => {});
         }
       },
       (error) => {
@@ -122,18 +99,12 @@ export class TenderdeclarationPage implements OnInit {
   }
 
   async printTender() {
-    const baseUrl =
-      this.constant.apiEndPoint +
-      '/ticket/gettenderdeclaration?gateid=' +
-      this.constant.gateId +
-      '&id=' +
-      this.constant.cashierShiftId;
-
-    this.httpClient.get<any>(baseUrl).subscribe(
+    this.service.getTenderPrintable().subscribe(
       (result) => {
-        console.log(result.Header);
-        console.log(result.Body);
-        this.printData(result.Header, result.Body);
+        this.printer.print(result.Body);
+        this.auditLogs
+          .printedTenderDeclaration(this.totalconfirmed)
+          .subscribe((a) => {});
       },
       (error) => {
         console.log(error);
@@ -141,45 +112,12 @@ export class TenderdeclarationPage implements OnInit {
     );
   }
 
-  async printData(header, printingdata) {
-    this.logOut();
-    const loading = await this.loadingController.create({
-      cssClass: 'my-custom-class',
-      message: 'Please wait while printing tender declaration...',
-      duration: 3000,
-    });
-    await loading.present();
-    const encoder = new EscPosEncoder();
-    const result = encoder.initialize();
-
-    ThermalPrinter.printFormattedText(
-      {
-        type: 'bluetooth',
-        id: this.constant.bluetoothAddress,
-        text: printingdata,
-      },
-      function () {
-        console.log('Successfully printed!');
-      },
-      function (error) {
-        console.error('Printing error', error);
-      }
-    );
-    const { role, data } = await loading.onDidDismiss();
-  }
   async goBack() {
     this.router.navigateByUrl('/home');
   }
   async logOut() {
-    const baseUrl =
-      this.constant.apiEndPoint +
-      '/ticket/signout?userid=' +
-      this.constant.userId +
-      '&gateid=' +
-      this.constant.gateId;
-
-    this.httpClient.get<any>(baseUrl).subscribe((readingdata) => {
-      console.log(readingdata);
+    this.userService.logOut().subscribe((data) => {
+      this.router.navigateByUrl('');
     });
   }
 }

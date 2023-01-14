@@ -1,3 +1,9 @@
+/* eslint-disable no-var */
+/* eslint-disable object-shorthand */
+/* eslint-disable @typescript-eslint/semi */
+/* eslint-disable space-before-function-paren */
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/* eslint-disable @typescript-eslint/naming-convention */
 export const commands = {
   LF: [0x0a],
   ESC: [0x1b],

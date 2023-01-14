@@ -13,24 +13,44 @@
 
   <ion-item>
     <ion-label>Printer</ion-label>
-    <ion-input placeholder="Printer"></ion-input>
+    <ion-input
+      placeholder="Printer"
+      readonly="true"
+      [(ngModel)]="printer"
+    ></ion-input>
   </ion-item>
 
   <ion-item>
     <ion-label>MIN</ion-label>
-    <ion-input placeholder="MIN"></ion-input>
+    <ion-input
+      placeholder="MIN"
+      readonly="true"
+      [(ngModel)]="settings.MIN"
+    ></ion-input>
   </ion-item>
   <ion-item>
     <ion-label>Serial</ion-label>
-    <ion-input placeholder="Serial"></ion-input>
+    <ion-input
+      placeholder="Serial"
+      readonly="true"
+      [(ngModel)]="settings.SN"
+    ></ion-input>
   </ion-item>
   <ion-item>
     <ion-label>PTU</ion-label>
-    <ion-datetime placeholder="PTU"></ion-datetime>
+    <ion-input
+      placeholder="PTU"
+      readonly="true"
+      [(ngModel)]="settings.AccreditationDateIssued"
+    ></ion-input>
   </ion-item>
   <ion-item>
     <ion-label>Accreditation</ion-label>
-    <ion-datetime placeholder="Accreditation"></ion-datetime>
+    <ion-input
+      placeholder="Accreditation"
+      readonly="true"
+      [(ngModel)]="settings.AccreditationNo"
+    ></ion-input>
   </ion-item>
   <ion-item>
     <p><i>This will reset the handheld data in the database.</i></p>
@@ -43,8 +63,4 @@
     </ion-col>
   </ion-row>
 </ion-content>
-<ion-footer>
-  <ion-toolbar>
-    <ion-button color="success" expand="block">Save Settings</ion-button>
-  </ion-toolbar>
-</ion-footer>
+<ion-footer> </ion-footer>

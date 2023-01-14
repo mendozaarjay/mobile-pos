@@ -1,52 +1,33 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Constants } from '../config/constants';
 import { AlertController } from '@ionic/angular';
 import { LoadingController } from '@ionic/angular';
-import { FormsModule } from '@angular/forms';
-import { Printer, PrintOptions } from '@awesome-cordova-plugins/printer/ngx';
-import { Device } from '@ionic-native/device/ngx';
-import { PrintService } from '../services/print.service';
-import EscPosEncoder from 'esc-pos-encoder-ionic';
-import { commands } from '../services/printer-commands';
-import {
-  PrinterToUse,
-  ThermalPrinterPlugin,
-} from 'thermal-printer-cordova-plugin/src';
-// eslint-disable-next-line @typescript-eslint/naming-convention, no-var
-declare let ThermalPrinter: ThermalPrinterPlugin;
+import { DynamicPrinterService } from '../services/dynamic-printer.service';
+import { ChangeFundService } from '../services/change-fund.service';
+import { AuditLogService } from '../services/audit-log.service';
 @Component({
   selector: 'app-changefund',
   templateUrl: './changefund.page.html',
   styleUrls: ['./changefund.page.scss'],
 })
 export class ChangefundPage implements OnInit {
-  changefund: number = 0.0;
+  changefund = 0.0;
   constructor(
     private router: Router,
-    private httpClient: HttpClient,
-    private constants: Constants,
     public alertController: AlertController,
     public loadingController: LoadingController,
-    private printer: Printer,
-    private device: Device,
-    public print: PrintService
+    private printer: DynamicPrinterService,
+    private service: ChangeFundService,
+    private auditLogs: AuditLogService
   ) {}
 
   ngOnInit() {}
   async confirmChangeFund() {
-    const baseUrl =
-      this.constants.apiEndPoint +
-      '/ticket/setchangefund?id=' +
-      this.constants.cashierShiftId +
-      '&fund=' +
-      this.changefund;
-
-    this.httpClient.get<any>(baseUrl).subscribe(
+    this.service.confirmChangeFund(this.changefund).subscribe(
       (result) => {
         if (result.includes('success')) {
           this.printChangeFund();
+          this.auditLogs.changeFund(this.changefund).subscribe((a) => {});
           this.router.navigateByUrl('/home');
         }
       },
@@ -66,44 +47,23 @@ export class ChangefundPage implements OnInit {
   }
 
   async printChangeFund() {
-    const baseUrl =
-      this.constants.apiEndPoint +
-      '/ticket/getchangefundprint?gateid=' +
-      this.constants.gateId +
-      '&id=' +
-      this.constants.cashierShiftId;
-
-    this.httpClient.get<any>(baseUrl).subscribe(
+    this.service.getChangeFund().subscribe(
       (result) => {
-        console.log(result.Header);
-        console.log(result.Body);
-        this.printData(result.Header, result.Body);
+        this.printData(result.Body);
       },
       (error) => {
         console.log(error);
       }
     );
   }
-  async printData(header, printingdata) {
+  async printData(printingdata) {
     const loading = await this.loadingController.create({
       cssClass: 'my-custom-class',
       message: 'Please wait while printing tender declaration...',
       duration: 3000,
     });
     await loading.present();
-    ThermalPrinter.printFormattedText(
-      {
-        type: 'bluetooth',
-        id: this.constants.bluetoothAddress,
-        text: printingdata,
-      },
-      function () {
-        console.log('Successfully printed!');
-      },
-      function (error) {
-        console.error('Printing error', error);
-      }
-    );
+    this.printer.print(printingdata);
     const { role, data } = await loading.onDidDismiss();
   }
 }

@@ -1,8 +1,9 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Transactions
-    </ion-title>
+    <ion-title> Transactions </ion-title>
+    <ion-label slot="end"
+      ><p><i>Logged as : {{username}} &nbsp;</i></p></ion-label
+    >
   </ion-toolbar>
 </ion-header>
 
@@ -12,32 +13,79 @@
       <ion-title>Transactions</ion-title>
     </ion-toolbar>
   </ion-header>
-  <br>
+  <br />
   <ion-row>
     <ion-col>
-      <ion-button class="largebutton" color="primary" expand="block" routerLink="/issueticket">Issue Ticket</ion-button>
+      <ion-button
+        class="largebutton"
+        color="primary"
+        expand="block"
+        (click)="goToIssueTicket()"
+        >Issue Ticket</ion-button
+      >
     </ion-col>
   </ion-row>
   <ion-row>
     <ion-col>
-      <ion-button class="largebutton" color="success" expand="block" routerLink="/issueor">Issue OR</ion-button>
+      <ion-button
+        class="largebutton"
+        color="success"
+        expand="block"
+        (click)="goToIssueOR()"
+        >Issue OR</ion-button
+      >
     </ion-col>
   </ion-row>
   <ion-row>
     <ion-col>
-      <ion-button class="largebutton" color="tertiary" expand="block" routerLink="/reprintor">Reprint OR</ion-button>
+      <ion-button
+        class="largebutton"
+        color="secondary"
+        expand="block"
+        (click)="goToReadings()"
+        >Readings</ion-button
+      >
     </ion-col>
   </ion-row>
   <ion-row>
     <ion-col>
-      <ion-button class="largebutton" color="secondary" expand="block" routerLink="/readings">Readings</ion-button>
+      <ion-button
+        class="largebutton"
+        color="tertiary"
+        expand="block"
+        (click)="goToReprintOr()"
+        >Reprint OR</ion-button
+      >
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-button
+        class="largebutton"
+        color="warning"
+        expand="block"
+        (click)="goToReprintTicket()"
+        >Reprint Ticket</ion-button
+      >
     </ion-col>
   </ion-row>
 
+  <ion-row>
+    <ion-col>
+      <ion-button
+        class="largebutton"
+        color="primary"
+        expand="block"
+        (click)="goToReprintReadings()"
+        >Reprint Readings</ion-button
+      >
+    </ion-col>
+  </ion-row>
   <ion-row class="margin-custom">
     <ion-col>
-      <ion-button  color="danger" expand="block" (click)="logOut()">Log out</ion-button>
+      <ion-button color="danger" expand="block" (click)="logOut()"
+        >Log out</ion-button
+      >
     </ion-col>
   </ion-row>
-
 </ion-content>

@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { PrintticketPage } from './printticket.page';
+import { ReprintticketPage } from './reprintticket.page';
 
-describe('PrintticketPage', () => {
-  let component: PrintticketPage;
-  let fixture: ComponentFixture<PrintticketPage>;
+describe('ReprintticketPage', () => {
+  let component: ReprintticketPage;
+  let fixture: ComponentFixture<ReprintticketPage>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ PrintticketPage ],
+      declarations: [ ReprintticketPage ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(PrintticketPage);
+    fixture = TestBed.createComponent(ReprintticketPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

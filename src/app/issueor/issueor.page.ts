@@ -1,77 +1,69 @@
-import { AfterContentInit, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { LoadingController } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
-import { Constants } from '../config/constants';
 import { ParkerType } from '../models/ParkerType';
-import { Observable } from 'rxjs';
 import { AlertController } from '@ionic/angular';
-import { PrintService } from '../services/print.service';
-import EscPosEncoder from 'esc-pos-encoder-ionic';
-import { commands } from '../services/printer-commands';
 import { DiscountType } from '../models/DiscountType';
 import { TransactionType } from '../models/TransactionType';
-import {
-  PrinterToUse,
-  ThermalPrinterPlugin,
-} from 'thermal-printer-cordova-plugin/src';
-// eslint-disable-next-line @typescript-eslint/naming-convention, no-var
-declare let ThermalPrinter: ThermalPrinterPlugin;
+import { Storage } from '@ionic/storage-angular';
+import { OfficialReceiptItem } from '../models/OfficialReceiptItem';
+import { Router } from '@angular/router';
+import { OfficialReceiptService } from '../services/official-receipt.service';
+import { DynamicPrinterService } from '../services/dynamic-printer.service';
+import { AuditLogService } from '../services/audit-log.service';
+
 @Component({
   selector: 'app-issueor',
   templateUrl: './issueor.page.html',
   styleUrls: ['./issueor.page.scss'],
 })
 export class IssueorPage implements OnInit {
-  id: string = '';
-  plateNo: string = '';
-  ticketNo: string = '';
-  verifiedTicketNo: string = '';
-  timeIn: string = '';
-  timeOut: string = '';
-  duration: string = '';
-  parkerTypeId: string = '';
+  isModalOpen = false;
+  scanActive = false;
+  id = '';
+  plateNo = '';
+  ticketNo: any;
+  verifiedTicketNo: any = '';
+  timeIn = '';
+  timeOut = '';
+  duration = '';
+  parkerTypeId = '';
   parkerType: ParkerType[] = [];
   discountTypes: DiscountType[] = [];
   transactionTypes: TransactionType[] = [];
   transactionTypeId: string;
-  defaultParkerType: string = '0';
-  defaulttransactionTypeId: string = '0';
-  discountTypeId: number = 0;
-  tenderamount: number = 0;
-  isDiscountDisabled: boolean = true;
-  discount: number = 0;
+  defaultParkerType = '0';
+  defaulttransactionTypeId = '0';
+  discountTypeId = 0;
+  tenderamount = 0;
+  isDiscountDisabled = true;
+  discount = 0;
   vat: number;
   fee: number;
   change: number;
   totalamount: number;
-  reference: string = '';
-  isrefenable: boolean = false;
+  reference = '';
+  isrefenable = false;
   constructor(
     public loadingController: LoadingController,
-    private httpClient: HttpClient,
-    private constant: Constants,
     public alertController: AlertController,
-    public print: PrintService
+    private route: Router,
+    private storage: Storage,
+    private service: OfficialReceiptService,
+    private printer: DynamicPrinterService,
+    private auditLogs: AuditLogService
   ) {}
 
   ngOnInit() {
     setTimeout(() => {
-      this.getParkerTypes();
       this.getDiscountType();
       this.getTransactionType();
     }, 1000);
 
     this.tenderamount = Number(this.tenderamount.toFixed(2));
   }
-
-  loadParkerTypes(): Observable<any> {
-    const baseUrl = this.constant.apiEndPoint + '/ticket/parkertypes';
-    return this.httpClient.get<any>(baseUrl);
-  }
   async getParkerTypes() {
     this.parkerType = [];
-    const baseUrl = this.constant.apiEndPoint + '/ticket/parkertypes';
-    return this.httpClient.get<any>(baseUrl).subscribe((res) => {
+    this.service.getParkerTypes().subscribe((res) => {
       res.forEach((element) => {
         const newItem = new ParkerType();
         newItem.id = element.Id;
@@ -80,7 +72,6 @@ export class IssueorPage implements OnInit {
         newItem.vat = element.Vat;
         newItem.isDefault = element.IsDefault;
         if (newItem.isDefault === true) {
-          this.constant.defaultParkerType = element.Id;
           this.defaultParkerType = element.Id;
         }
         this.parkerType.push(newItem);
@@ -88,8 +79,8 @@ export class IssueorPage implements OnInit {
     });
   }
   async getDiscountType() {
-    const baseUrl = this.constant.apiEndPoint + '/ticket/getdiscounttypes';
-    this.httpClient.get<any>(baseUrl).subscribe((res) => {
+    this.discountTypes = [];
+    this.service.getDiscounts().subscribe((res) => {
       res.forEach((element) => {
         const newItem = new DiscountType();
         newItem.id = element.Id;
@@ -101,26 +92,18 @@ export class IssueorPage implements OnInit {
     });
   }
   async getTransactionType() {
-    const baseUrl = this.constant.apiEndPoint + '/ticket/gettransactiontypes';
-    this.httpClient.get<any>(baseUrl).subscribe((res) => {
+    this.transactionTypes = [];
+    this.service.getTransactionTypes().subscribe((res) => {
       res.forEach((element) => {
         const newItem = new TransactionType();
         newItem.id = element.Id;
         newItem.name = element.Name;
         this.transactionTypes.push(newItem);
-        this.defaulttransactionTypeId = this.constant.defaultTransactionType;
-        this.transactionTypeId = this.constant.defaultTransactionType;
       });
     });
   }
   async computeRate() {
-    console.log(this.discount);
-    const baseUrl =
-      this.constant.apiEndPoint +
-      '/ticket/calculaterate?transitid=' +
-      this.id +
-      '&parkertypeid=' +
-      this.parkerTypeId;
+    this.auditLogs.buttonClicked('Compute OR Button').subscribe((a) => {});
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'Cannot Continue',
@@ -146,14 +129,18 @@ export class IssueorPage implements OnInit {
       console.log('onDidDismiss resolved with role', role);
       return;
     }
-
-    this.httpClient.get<any>(baseUrl).subscribe((data) => {
+    this.service.getRate(this.id, this.parkerTypeId).subscribe((data) => {
       this.totalamount = data.Amount - this.discount;
       this.fee = data.Amount - this.discount;
-      console.log(this.totalamount);
-      console.log(this.fee);
-      const computedVat = (this.totalamount * 0.12) / 1.12;
-      this.vat = computedVat;
+
+      this.service.checkIfVatable(this.parkerTypeId).subscribe((vatable) => {
+        if (vatable === true) {
+          const computedVat = (this.totalamount * 0.12) / 1.12;
+          this.vat = computedVat;
+        } else {
+          this.vat = 0;
+        }
+      });
 
       if (this.tenderamount > 0) {
         this.change = this.tenderamount - this.totalamount;
@@ -179,11 +166,8 @@ export class IssueorPage implements OnInit {
     }
   }
   async printOfficialReceipt() {
-    console.log(this.isrefenable);
-    console.log(this.transactionTypeId);
-    console.log('refeernce' + this.reference + '|asd');
+    this.auditLogs.buttonClicked('Save and Print OR').subscribe((a) => {});
     if (this.isrefenable && this.checkRefence() === false) {
-      console.log('why pumasok dito');
       const alert = await this.alertController.create({
         cssClass: 'my-custom-class',
         header: 'Cannot Continue',
@@ -200,44 +184,21 @@ export class IssueorPage implements OnInit {
       duration: 2000,
     });
     await loading.present();
-    const baseUrl =
-      this.constant.apiEndPoint +
-      '/ticket/officialreceipt?' +
-      'ticketno=' +
-      this.ticketNo +
-      '&' +
-      'transitid=' +
-      this.id +
-      '&' +
-      'gate=' +
-      this.constant.gateId +
-      '&' +
-      'parkertype=' +
-      this.parkerTypeId +
-      '&' +
-      'tenderamount=' +
-      this.tenderamount +
-      '&' +
-      'change=' +
-      this.change +
-      '&' +
-      'totalamount=' +
-      this.totalamount +
-      '&' +
-      'userid=' +
-      this.constant.userId +
-      '&discountid=' +
-      this.discountTypeId +
-      '&discountamount=' +
-      this.discount +
-      '&cashlesstype=' +
-      this.transactionTypeId +
-      '&cashlessreference=' +
-      this.reference;
-    this.httpClient.get<any>(baseUrl).subscribe(
+
+    const item = new OfficialReceiptItem();
+    item.id = this.id;
+    item.ticketNo = this.ticketNo;
+    item.parkerTypeId = this.parkerTypeId;
+    item.tenderAmount = this.tenderamount;
+    item.change = this.change;
+    item.totalamount = this.totalamount;
+    item.discountTypeId = this.discountTypeId;
+    item.discount = this.discount;
+    item.transactionTypeId = this.transactionTypeId;
+    item.reference = this.reference;
+    this.service.setOfficialReceipt(item).subscribe(
       (result) => {
-        console.log(result.Printable);
-        this.printData(result.Printable);
+        this.printer.print(result.Printable);
         this.loadDefault();
       },
       (error) => {
@@ -246,15 +207,10 @@ export class IssueorPage implements OnInit {
     );
     const { role, data } = await loading.onDidDismiss();
   }
+
   async verifyTicket() {
-    const baseUrl =
-      this.constant.apiEndPoint +
-      '/ticket/verifyticket?ticket=' +
-      this.ticketNo +
-      '&gate=0' +
-      '&plateno=' +
-      this.plateNo;
-    this.httpClient.get<any>(baseUrl).subscribe(
+    this.auditLogs.buttonClicked('Verify Button').subscribe((a) => {});
+    this.service.verifyTicket(this.ticketNo, this.plateNo).subscribe(
       (ticketdata) => {
         this.verifiedTicketNo = ticketdata.TicketNo;
         this.plateNo = ticketdata.PlateNo;
@@ -262,6 +218,7 @@ export class IssueorPage implements OnInit {
         this.timeOut = ticketdata.ExitDate;
         this.duration = ticketdata.Duration;
         this.id = ticketdata.Id;
+        console.log(ticketdata);
       },
       (error) => {
         this.loadDefault();
@@ -317,19 +274,20 @@ export class IssueorPage implements OnInit {
     this.id = '0';
     this.reference = '';
   }
-  async printData(printingdata) {
-    ThermalPrinter.printFormattedText(
-      {
-        type: 'bluetooth',
-        id: this.constant.bluetoothAddress,
-        text: printingdata,
-      },
-      function () {
-        console.log('Successfully printed!');
-      },
-      function (error) {
-        console.error('Printing error', error);
-      }
-    );
+  async openModal() {
+    this.auditLogs.buttonClicked('Scan QR Button').subscribe((a) => {});
+    this.route.navigateByUrl('/qrscanner');
+  }
+  async checkTicketViaQr() {
+    const name = await this.storage.get('ticket');
+    if (name) {
+      this.ticketNo = name;
+      await this.storage.remove('ticket');
+      this.verifyTicket();
+    }
+  }
+  ionViewWillEnter() {
+    this.getParkerTypes();
+    this.checkTicketViaQr();
   }
 }
