@@ -40,6 +40,7 @@ export class ZreadingPage implements OnInit {
 
     await loading.present();
     this.service.performZReading().subscribe((readingdata) => {
+      console.log(readingdata);
       this.srNo = readingdata;
     });
     const { role, data } = await loading.onDidDismiss();

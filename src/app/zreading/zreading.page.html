@@ -14,11 +14,11 @@
     </ion-col>
   </ion-row>
   <ion-item>
-    <ion-label>Your SR Number is : {{sRNo}}</ion-label>
+    <ion-label>Your SR Number is : {{srNo}}</ion-label>
   </ion-item>
 </ion-content>
 <ion-footer>
   <ion-toolbar>
-    <ion-button color="success" expand="block" (click)="printZReading()" [disabled]="sRNo?.length <= 0">Print</ion-button>
+    <ion-button color="success" expand="block" (click)="printZReading()" [disabled]="srNo?.length <= 0">Print</ion-button>
   </ion-toolbar>
 </ion-footer>

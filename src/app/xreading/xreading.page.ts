@@ -40,14 +40,18 @@ export class XreadingPage implements OnInit {
 
     this.service.performXReading().subscribe((readingdata) => {
       this.sRNo = readingdata;
+      if (readingdata.Success === '0') {
+        alert('You have to log out before performing X reading.');
+        this.sRNo = '';
+      } else {
+        this.sRNo = readingdata.Returned;
+      }
     });
     const { role, data } = await loading.onDidDismiss();
   }
 
   async printXReading() {
-    this.auditLogs
-      .buttonClicked('Print X Reading Button')
-      .subscribe((a) => {});
+    this.auditLogs.buttonClicked('Print X Reading Button').subscribe((a) => {});
     this.service.getXReadingPrintable(this.sRNo).subscribe((readingdata) => {
       this.printData(readingdata.Body);
     });
