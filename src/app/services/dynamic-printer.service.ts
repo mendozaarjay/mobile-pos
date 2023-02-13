@@ -17,6 +17,8 @@ export class DynamicPrinterService {
         type: 'bluetooth',
         id: this.constants.bluetoothAddress,
         text: data,
+        mmFeedPaper : 30,
+        dotsFeedPaper: 10
       },
       () => {
         console.log('Successfully printed!');

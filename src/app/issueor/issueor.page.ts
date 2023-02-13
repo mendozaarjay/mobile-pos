@@ -43,6 +43,7 @@ export class IssueorPage implements OnInit {
   totalamount: number;
   reference = '';
   isrefenable = false;
+  isPrinting: boolean = false;
   constructor(
     public loadingController: LoadingController,
     public alertController: AlertController,
@@ -196,13 +197,16 @@ export class IssueorPage implements OnInit {
     item.discount = this.discount;
     item.transactionTypeId = this.transactionTypeId;
     item.reference = this.reference;
+    this.isPrinting = true;
     this.service.setOfficialReceipt(item).subscribe(
       (result) => {
         this.printer.print(result.Printable);
         this.loadDefault();
+        this.isPrinting = false;
       },
       (error) => {
         console.log(error);
+        this.officialReceiptError();
       }
     );
     const { role, data } = await loading.onDidDismiss();
@@ -212,15 +216,21 @@ export class IssueorPage implements OnInit {
     this.auditLogs.buttonClicked('Verify Button').subscribe((a) => {});
     this.service.verifyTicket(this.ticketNo, this.plateNo).subscribe(
       (ticketdata) => {
-        this.verifiedTicketNo = ticketdata.TicketNo;
-        this.plateNo = ticketdata.PlateNo;
-        this.timeIn = ticketdata.EntranceDate;
-        this.timeOut = ticketdata.ExitDate;
-        this.duration = ticketdata.Duration;
-        this.id = ticketdata.Id;
-        console.log(ticketdata);
+        if (ticketdata.IsCompleted === false) {
+          this.verifiedTicketNo = ticketdata.TicketNo;
+          this.plateNo = ticketdata.PlateNo;
+          this.timeIn = ticketdata.EntranceDate;
+          this.timeOut = ticketdata.ExitDate;
+          this.duration = ticketdata.Duration;
+          this.id = ticketdata.Id;
+        } else {
+          this.showAlert();
+        }
       },
       (error) => {
+        if (error.status === 404) {
+          this.showAlert();
+        }
         this.loadDefault();
       }
     );
@@ -231,6 +241,7 @@ export class IssueorPage implements OnInit {
     this.change = this.change - this.discount;
     this.calculateDiscount();
   }
+
   discountChanged(event: any) {
     const id = event.target.value;
     if (id === '0' || id === 0) {
@@ -242,7 +253,22 @@ export class IssueorPage implements OnInit {
     }
     this.computeRate();
   }
-
+  async showAlert() {
+    const alert = await this.alertController.create({
+      header: 'Official Receipt',
+      message: 'This ticket has been processed.',
+      buttons: ['OK'],
+    });
+    await alert.present();
+  }
+  async officialReceiptError() {
+    const alert = await this.alertController.create({
+      header: 'Official Receipt',
+      message: 'Cannot continue. Please check all the details before printing the official receipt.',
+      buttons: ['OK'],
+    });
+    await alert.present();
+  }
   calculateDiscount() {
     if (this.discountTypeId !== 0) {
       const selected = this.discountTypes.find(
@@ -273,6 +299,24 @@ export class IssueorPage implements OnInit {
     this.duration = '';
     this.id = '0';
     this.reference = '';
+    this.plateNo = '';
+    this.timeIn = '';
+    this.timeOut = '';
+    this.duration = '';
+    this.parkerTypeId = '';
+    this.transactionTypeId = '';
+    this.defaultParkerType = '0';
+    this.defaulttransactionTypeId = '0';
+    this.discountTypeId = 0;
+    this.tenderamount = 0;
+    this.isDiscountDisabled = true;
+    this.discount = 0;
+    this.vat = 0;
+    this.fee = 0;
+    this.change = 0;
+    this.totalamount = 0;
+    this.reference = '';
+    this.isrefenable = false;
   }
   async openModal() {
     this.auditLogs.buttonClicked('Scan QR Button').subscribe((a) => {});
