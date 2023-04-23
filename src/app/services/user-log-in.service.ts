@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Constants } from '../config/constants';
+import { UserAccessMatrix } from '../models/UserAcessMatrix';
 @Injectable({
   providedIn: 'root',
 })
@@ -37,11 +38,30 @@ export class UserLogInService {
       });
     });
   }
-  logOut() {
+
+  getUserAccess(userId: string) {
+    const url = this.constants.baseUrl + '/ticket/getuseraccess?id=' + userId;
+    return this.http.get<UserAccessMatrix[]>(url);
+  }
+  checkIfWithReading() {
+    const url =
+      this.constants.baseUrl +
+      '/ticket/checkifwithreading?id=' +
+      this.constants.gateId;
+    return this.http.get<any>(url);
+  }
+  checkIfWithYReading() {
+    const url =
+      this.constants.baseUrl +
+      '/ticket/checkifwithyreading?id=' +
+      this.constants.gateId;
+    return this.http.get<any>(url);
+  }
+  logOut(userId: string) {
     const url =
       this.constants.baseUrl +
       '/ticket/signout?userid=' +
-      this.constants.userId +
+      userId +
       '&gateid=' +
       this.constants.gateId;
     return this.http.get<any>(url);

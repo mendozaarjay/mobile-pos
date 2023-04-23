@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Component, OnInit } from '@angular/core';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { ReadingItem } from '../models/ReadingItem.model';
@@ -38,7 +39,9 @@ export class ReprintreadingsPage implements OnInit {
       await alert.present();
       return;
     }
-    this.auditLogs.searchReading(this.readingTitle).subscribe((a) => {});
+    this.auditLogs
+      .searchReading(this.readingTitle, this.userId)
+      .subscribe((a) => {});
     this.readingItems = [];
     this.service
       .getReadingItems(this.readingType, this.keyword)
@@ -47,8 +50,10 @@ export class ReprintreadingsPage implements OnInit {
       });
   }
   async reprintReading(srno: string, type: string) {
-    this.auditLogs.reprintReadings(this.readingTitle).subscribe((a) => {});
-    this.service.reprintReadings(type, srno).subscribe((data) => {
+    this.auditLogs
+      .reprintReadings(this.readingTitle, this.userId)
+      .subscribe((a) => {});
+    this.service.reprintReadings(type, srno, this.userId).subscribe((data) => {
       console.log(data);
       this.printData(data.Body);
     });
@@ -76,5 +81,20 @@ export class ReprintreadingsPage implements OnInit {
     await loading.present();
     this.printer.print(reading);
     const { role, data } = await loading.onDidDismiss();
+  }
+  username = '';
+  userId = '';
+  cashierShiftId = '';
+  ionViewWillEnter() {
+    const userInfoString = localStorage.getItem('userInfo');
+    if (userInfoString) {
+      const userInfo = JSON.parse(userInfoString);
+      const cashierId = userInfo.Id;
+      const cashierName = userInfo.Name;
+      this.username = cashierName;
+      this.userId = cashierId;
+    }
+    const cashierShiftId = localStorage.getItem('cashierShiftId');
+    this.cashierShiftId = cashierShiftId;
   }
 }

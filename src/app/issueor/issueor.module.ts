@@ -8,7 +8,7 @@ import { IssueorPageRoutingModule } from './issueor-routing.module';
 
 import { IssueorPage } from './issueor.page';
 import { HttpClientModule } from '@angular/common/http';
-
+import { StatusComponentModule } from '../components/status/status.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -16,7 +16,8 @@ import { HttpClientModule } from '@angular/common/http';
     IonicModule,
     IssueorPageRoutingModule,
     HttpClientModule,
+    StatusComponentModule,
   ],
-  declarations: [IssueorPage]
+  declarations: [IssueorPage],
 })
 export class IssueorPageModule {}

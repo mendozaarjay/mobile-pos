@@ -7,22 +7,22 @@ import { Constants } from '../config/constants';
 })
 export class ChangeFundService {
   constructor(private httpClient: HttpClient, private constants: Constants) {}
-  confirmChangeFund(fund: any) {
+  confirmChangeFund(fund: any, cashierShiftId: string) {
     const url =
       this.constants.baseUrl +
       '/ticket/setchangefund?id=' +
-      this.constants.cashierShiftId +
+      cashierShiftId +
       '&fund=' +
       fund;
     return this.httpClient.get<any>(url);
   }
-  getChangeFund() {
+  getChangeFund(cashierShiftId: string) {
     const url =
       this.constants.baseUrl +
       '/ticket/getchangefundprint?gateid=' +
       this.constants.gateId +
       '&id=' +
-      this.constants.cashierShiftId;
+      cashierShiftId;
     return this.httpClient.get<any>(url);
   }
 }

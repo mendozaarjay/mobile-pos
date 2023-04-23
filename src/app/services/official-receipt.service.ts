@@ -29,7 +29,7 @@ export class OfficialReceiptService {
       parkerType;
     return this.httpClient.get<any>(url);
   }
-  setOfficialReceipt(item: OfficialReceiptItem) {
+  setOfficialReceipt(item: OfficialReceiptItem, userId: string) {
     const url =
       this.constants.baseUrl +
       '/ticket/officialreceipt?' +
@@ -55,7 +55,7 @@ export class OfficialReceiptService {
       item.totalamount +
       '&' +
       'userid=' +
-      this.constants.userId +
+      userId +
       '&discountid=' +
       item.discountTypeId +
       '&discountamount=' +

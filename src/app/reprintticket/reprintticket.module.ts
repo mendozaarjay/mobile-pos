@@ -7,14 +7,16 @@ import { IonicModule } from '@ionic/angular';
 import { ReprintticketPageRoutingModule } from './reprintticket-routing.module';
 
 import { ReprintticketPage } from './reprintticket.page';
+import { StatusComponentModule } from '../components/status/status.component';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ReprintticketPageRoutingModule
+    ReprintticketPageRoutingModule,
+    StatusComponentModule,
   ],
-  declarations: [ReprintticketPage]
+  declarations: [ReprintticketPage],
 })
 export class ReprintticketPageModule {}

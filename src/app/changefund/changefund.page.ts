@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
@@ -23,18 +24,22 @@ export class ChangefundPage implements OnInit {
 
   ngOnInit() {}
   async confirmChangeFund() {
-    this.service.confirmChangeFund(this.changefund).subscribe(
-      (result) => {
-        if (result.includes('success')) {
-          this.printChangeFund();
-          this.auditLogs.changeFund(this.changefund).subscribe((a) => {});
-          this.router.navigateByUrl('/home');
+    this.service
+      .confirmChangeFund(this.changefund, this.cashierShiftId)
+      .subscribe(
+        (result) => {
+          if (result.includes('success')) {
+            this.printChangeFund();
+            this.auditLogs
+              .changeFund(this.changefund, this.userId)
+              .subscribe((a) => {});
+            this.router.navigateByUrl('/home');
+          }
+        },
+        (error) => {
+          this.printError(error);
         }
-      },
-      (error) => {
-        this.printError(error);
-      }
-    );
+      );
   }
   async printError(message: string) {
     const alert = await this.alertController.create({
@@ -47,7 +52,7 @@ export class ChangefundPage implements OnInit {
   }
 
   async printChangeFund() {
-    this.service.getChangeFund().subscribe(
+    this.service.getChangeFund(this.cashierShiftId).subscribe(
       (result) => {
         this.printData(result.Body);
       },
@@ -65,5 +70,20 @@ export class ChangefundPage implements OnInit {
     await loading.present();
     this.printer.print(printingdata);
     const { role, data } = await loading.onDidDismiss();
+  }
+  username = '';
+  userId = '';
+  cashierShiftId = '';
+  ionViewWillEnter() {
+    const userInfoString = localStorage.getItem('userInfo');
+    if (userInfoString) {
+      const userInfo = JSON.parse(userInfoString);
+      const cashierId = userInfo.Id;
+      const cashierName = userInfo.Name;
+      this.username = cashierName;
+      this.userId = cashierId;
+    }
+    const cashierShiftId = localStorage.getItem('cashierShiftId');
+    this.cashierShiftId = cashierShiftId;
   }
 }

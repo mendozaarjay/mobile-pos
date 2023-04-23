@@ -8,7 +8,7 @@ import { Constants } from '../config/constants';
 export class AuditLogService {
   constructor(private http: HttpClient, private constants: Constants) {}
 
-  buttonClicked(button: string) {
+  buttonClicked(button: string, userId: string) {
     const description = `${button} clicked.`;
     const baseUrl =
       this.constants.baseUrl +
@@ -17,10 +17,11 @@ export class AuditLogService {
       '&gateid=' +
       this.constants.gateId +
       '&userid=' +
-      this.constants.userId;
+      userId;
+      console.log('clicked here');
     return this.http.get<any>(baseUrl);
   }
-  issueTicket(ticketNo: string) {
+  issueTicket(ticketNo: string, userId: string) {
     const description = `Issued ticket : ${ticketNo}.`;
     const baseUrl =
       this.constants.baseUrl +
@@ -29,10 +30,10 @@ export class AuditLogService {
       '&gateid=' +
       this.constants.gateId +
       '&userid=' +
-      this.constants.userId;
+      userId;
     return this.http.get<any>(baseUrl);
   }
-  issueOfficialReceipt(officialReceipt: string) {
+  issueOfficialReceipt(officialReceipt: string, userId: string) {
     const description = `Issued official receipt : ${officialReceipt}.`;
     const baseUrl =
       this.constants.baseUrl +
@@ -41,10 +42,10 @@ export class AuditLogService {
       '&gateid=' +
       this.constants.gateId +
       '&userid=' +
-      this.constants.userId;
+      userId;
     return this.http.get<any>(baseUrl);
   }
-  reprintTicket(ticketNo: string) {
+  reprintTicket(ticketNo: string, userId: string) {
     const description = `Reprinted ticket : ${ticketNo}.`;
     const baseUrl =
       this.constants.baseUrl +
@@ -53,10 +54,10 @@ export class AuditLogService {
       '&gateid=' +
       this.constants.gateId +
       '&userid=' +
-      this.constants.userId;
+      userId;
     return this.http.get<any>(baseUrl);
   }
-  reprintOfficialReceipt(officialReceipt: string) {
+  reprintOfficialReceipt(officialReceipt: string, userId: string) {
     const description = `Reprinted official receipt : ${officialReceipt}.`;
     const baseUrl =
       this.constants.baseUrl +
@@ -65,10 +66,10 @@ export class AuditLogService {
       '&gateid=' +
       this.constants.gateId +
       '&userid=' +
-      this.constants.userId;
+      userId;
     return this.http.get<any>(baseUrl);
   }
-  printedReadings(type: string, referenceNo: string) {
+  printedReadings(type: string, referenceNo: string, userId: string) {
     const description = `Printed ${type} readings : ${referenceNo}.`;
     const baseUrl =
       this.constants.baseUrl +
@@ -77,10 +78,10 @@ export class AuditLogService {
       '&gateid=' +
       this.constants.gateId +
       '&userid=' +
-      this.constants.userId;
+      userId;
     return this.http.get<any>(baseUrl);
   }
-  rePrintedReadings(type: string, referenceNo: string) {
+  rePrintedReadings(type: string, referenceNo: string, userId: string) {
     const description = `Reprinted ${type} readings : ${referenceNo}.`;
     const baseUrl =
       this.constants.baseUrl +
@@ -89,10 +90,10 @@ export class AuditLogService {
       '&gateid=' +
       this.constants.gateId +
       '&userid=' +
-      this.constants.userId;
+      userId;
     return this.http.get<any>(baseUrl);
   }
-  userLogin(username: string) {
+  userLogin(username: string, userId: string) {
     const description = `Log in success as : ${username}.`;
     const baseUrl =
       this.constants.baseUrl +
@@ -101,7 +102,7 @@ export class AuditLogService {
       '&gateid=' +
       this.constants.gateId +
       '&userid=' +
-      this.constants.userId;
+      userId;
     return this.http.get<any>(baseUrl);
   }
   userLoginError(username: string) {
@@ -116,7 +117,7 @@ export class AuditLogService {
       0;
     return this.http.get<any>(baseUrl);
   }
-  userLogOut() {
+  userLogOut(userId: string) {
     const description = `Logged out.`;
     const baseUrl =
       this.constants.baseUrl +
@@ -125,10 +126,10 @@ export class AuditLogService {
       '&gateid=' +
       this.constants.gateId +
       '&userid=' +
-      this.constants.userId;
+      userId;
     return this.http.get<any>(baseUrl);
   }
-  changeFund(amount: number) {
+  changeFund(amount: number, userId: string) {
     const description = `Printed change fund : ${amount}.`;
     const baseUrl =
       this.constants.baseUrl +
@@ -137,10 +138,10 @@ export class AuditLogService {
       '&gateid=' +
       this.constants.gateId +
       '&userid=' +
-      this.constants.userId;
+      userId;
     return this.http.get<any>(baseUrl);
   }
-  confirmedTenderDeclaration(amount: number) {
+  confirmedTenderDeclaration(amount: number, userId: string) {
     const description = `Confirmed tender declaration : ${amount}.`;
     const baseUrl =
       this.constants.baseUrl +
@@ -149,10 +150,10 @@ export class AuditLogService {
       '&gateid=' +
       this.constants.gateId +
       '&userid=' +
-      this.constants.userId;
+      userId;
     return this.http.get<any>(baseUrl);
   }
-  printedTenderDeclaration(amount: number) {
+  printedTenderDeclaration(amount: number, userId: string) {
     const description = `Printed tender declaration : ${amount}.`;
     const baseUrl =
       this.constants.baseUrl +
@@ -161,10 +162,10 @@ export class AuditLogService {
       '&gateid=' +
       this.constants.gateId +
       '&userid=' +
-      this.constants.userId;
+      userId;
     return this.http.get<any>(baseUrl);
   }
-  searchReading(title: string) {
+  searchReading(title: string, userId: string) {
     const description = `Search for ${title} Button Clicked.`;
     const baseUrl =
       this.constants.baseUrl +
@@ -173,10 +174,10 @@ export class AuditLogService {
       '&gateid=' +
       this.constants.gateId +
       '&userid=' +
-      this.constants.userId;
+      userId;
     return this.http.get<any>(baseUrl);
   }
-  reprintReadings(title: string) {
+  reprintReadings(title: string, userId: string) {
     const description = `Reprint for ${title} Button Clicked.`;
     const baseUrl =
       this.constants.baseUrl +
@@ -185,8 +186,7 @@ export class AuditLogService {
       '&gateid=' +
       this.constants.gateId +
       '&userid=' +
-      this.constants.userId;
+      userId;
     return this.http.get<any>(baseUrl);
   }
-
 }

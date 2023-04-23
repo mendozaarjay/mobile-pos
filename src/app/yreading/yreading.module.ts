@@ -8,13 +8,15 @@ import { YreadingPageRoutingModule } from './yreading-routing.module';
 
 import { YreadingPage } from './yreading.page';
 import { HttpClientModule } from '@angular/common/http';
+import { StatusComponentModule } from '../components/status/status.component';
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
     YreadingPageRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    StatusComponentModule
   ],
   declarations: [YreadingPage]
 })

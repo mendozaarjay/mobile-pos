@@ -40,13 +40,13 @@ export class ReadingsService {
       this.constants.gateId;
     return this.http.get<any>(baseUrl);
   }
-  performYReading() {
+  performYReading(userId: string) {
     const baseUrl =
       this.constants.baseUrl +
       '/ticket/performyreading?gateid=' +
       this.constants.gateId +
       '&userid=' +
-      this.constants.userId;
+      userId;
     return this.http.get<any>(baseUrl);
   }
   getYReadingPrintable(srNo: string) {
@@ -65,16 +65,16 @@ export class ReadingsService {
       this.constants.gateId;
     return this.http.get<any>(baseUrl);
   }
-  performZReading() {
+  performZReading(userId: string) {
     const baseUrl =
       this.constants.baseUrl +
       '/ticket/performzreading?gateid=' +
       this.constants.gateId +
       '&userid=' +
-      this.constants.userId;
+      userId;
     return this.http.get<any>(baseUrl);
   }
-  getZReadingPrintable(srNo: string) {
+  getZReadingPrintable(srNo: string, userId: string) {
     const baseUrl =
       this.constants.baseUrl +
       '/ticket/zreading?gateid=' +
@@ -82,7 +82,7 @@ export class ReadingsService {
       '&srno=' +
       srNo +
       '&userid=' +
-      this.constants.userId;
+      userId;
     return this.http.get<any>(baseUrl);
   }
   getReadingItems(type: string, keyword: string): Observable<ReadingItem[]> {
@@ -97,7 +97,7 @@ export class ReadingsService {
     return this.http.get<ReadingItem[]>(baseUrl);
   }
 
-  reprintReadings(type: string, srNo: string) {
+  reprintReadings(type: string, srNo: string, userId: string) {
     let baseUrl = '';
     if (type === 'XR') {
       baseUrl =
@@ -123,7 +123,7 @@ export class ReadingsService {
         '&srNo=' +
         srNo +
         '&userId=' +
-        this.constants.userId;
+        userId;
     }
     return this.http.get<any>(baseUrl);
   }

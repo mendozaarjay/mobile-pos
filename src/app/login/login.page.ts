@@ -4,6 +4,8 @@ import { Constants } from '../config/constants';
 import { AlertController } from '@ionic/angular';
 import { UserLogInService } from '../services/user-log-in.service';
 import { AuditLogService } from '../services/audit-log.service';
+import { UserAccessMatrix } from '../models/UserAcessMatrix';
+import { StatusService } from '../services/status.service';
 
 @Component({
   selector: 'app-login',
@@ -13,16 +15,22 @@ import { AuditLogService } from '../services/audit-log.service';
 export class LoginPage implements OnInit {
   username = '';
   password = '';
-
+  version = '';
+  statusText = 'Offline';
+  statusColor = 'danger';
   constructor(
     private router: Router,
     private constants: Constants,
     public alertController: AlertController,
     private service: UserLogInService,
-    private auditLogs: AuditLogService
+    private auditLogs: AuditLogService,
+    private statusService: StatusService,
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.version = this.constants.version;
+    this.checkApiStatus();
+  }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   async SignInNew() {
@@ -36,10 +44,14 @@ export class LoginPage implements OnInit {
           this.auditLogs.userLoginError(this.username).subscribe((a) => {});
           this.showLoginError();
         } else {
-          this.constants.userId = result.Id;
-          this.constants.username = result.Name;
-          this.auditLogs.userLogin(this.username).subscribe((a) => {});
-          this.checkChangeFund(result.Id);
+          localStorage.setItem('userInfo', JSON.stringify(result));
+          this.auditLogs
+            .userLogin(this.username, result.Id)
+            .subscribe((a) => {});
+          // this.checkChangeFund(result.Id);
+          this.checkUserAccess(result.Id);
+          this.checkIfWithReading();
+          this.checkIfWithYReading();
         }
       },
       (error) => {
@@ -68,7 +80,7 @@ export class LoginPage implements OnInit {
   async checkChangeFund(userid: any) {
     this.service.checkChangeFund(userid).subscribe(
       (result) => {
-        this.constants.cashierShiftId = result.Id;
+        localStorage.setItem('cashierShiftId', result.Id);
         this.service.setParkingTypes();
         if (result.WithChangeFund === true) {
           this.router.navigateByUrl('/home');
@@ -79,6 +91,55 @@ export class LoginPage implements OnInit {
       (error) => {
         console.log(error);
         this.printError(error);
+      }
+    );
+  }
+  async checkUserAccess(userId: string) {
+    this.service
+      .getUserAccess(userId)
+      .subscribe((result: UserAccessMatrix[]) => {
+        localStorage.setItem('userAccess', JSON.stringify(result));
+
+        if (result.find((a) => a.code === 'HHPOSIOR')) {
+          this.checkChangeFund(userId);
+        } else {
+          this.router.navigateByUrl('/home');
+        }
+      });
+  }
+  async checkIfWithReading() {
+    this.service.checkIfWithReading().subscribe((result) => {
+      if (result) {
+        localStorage.setItem('withReading', '1');
+      } else {
+        localStorage.setItem('withReading', '0');
+      }
+    });
+  }
+  async checkIfWithYReading() {
+    this.service.checkIfWithYReading().subscribe((result) => {
+      if (result) {
+        localStorage.setItem('withYReading', '1');
+      } else {
+        localStorage.setItem('withYReading', '0');
+      }
+    });
+  }
+  checkApiStatus() {
+    this.statusService.checkApiStatus().subscribe(
+      (status) => {
+        if (status) {
+          this.statusText = 'Online';
+          this.statusColor = 'success';
+        } else {
+          this.statusText = 'Offline';
+          this.statusColor = 'medium';
+        }
+      },
+      (error) => {
+        console.log('Error checking API status:', error);
+        this.statusText = 'Offline';
+        this.statusColor = 'medium';
       }
     );
   }

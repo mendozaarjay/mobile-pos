@@ -8,7 +8,7 @@ import { ExploreContainerComponentModule } from '../explore-container/explore-co
 import { Tab1PageRoutingModule } from './tab1-routing.module';
 import { Printer } from '@ionic-native/printer/ngx';
 import { HttpClientModule } from '@angular/common/http';
-
+import { StatusComponentModule } from '../components/status/status.component';
 @NgModule({
   imports: [
     IonicModule,
@@ -17,10 +17,9 @@ import { HttpClientModule } from '@angular/common/http';
     ExploreContainerComponentModule,
     Tab1PageRoutingModule,
     HttpClientModule,
+    StatusComponentModule,
   ],
-  providers : [
-    Printer
-  ],
-  declarations: [Tab1Page]
+  providers: [Printer],
+  declarations: [Tab1Page],
 })
 export class Tab1PageModule {}

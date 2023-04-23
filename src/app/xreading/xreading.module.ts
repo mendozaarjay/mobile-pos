@@ -8,13 +8,15 @@ import { XreadingPageRoutingModule } from './xreading-routing.module';
 
 import { XreadingPage } from './xreading.page';
 import { HttpClientModule } from '@angular/common/http';
+import { StatusComponentModule } from '../components/status/status.component';
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
     XreadingPageRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    StatusComponentModule
   ],
   declarations: [XreadingPage]
 })

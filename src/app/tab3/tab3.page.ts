@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-inferrable-types */
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Component } from '@angular/core';
 import { LoadingController } from '@ionic/angular';
 import { Constants } from '../config/constants';
@@ -5,6 +7,7 @@ import { AlertController } from '@ionic/angular';
 import { AuditLogService } from '../services/audit-log.service';
 import { SettingsService } from '../services/settings.service';
 import { GateInformation } from '../models/GateInformation';
+import { UserAccessMatrix } from '../models/UserAcessMatrix';
 @Component({
   selector: 'app-tab3',
   templateUrl: 'tab3.page.html',
@@ -51,7 +54,9 @@ export class Tab3Page {
     }
   }
   async resetHandHeld() {
-    this.auditLogs.buttonClicked('Reset Handheld Button');
+    this.auditLogs
+      .buttonClicked('Reset Handheld Button', this.userId)
+      .subscribe(() => {});
     this.service.resetHandled().subscribe((result) => {
       this.showMessage(result);
     });
@@ -65,10 +70,33 @@ export class Tab3Page {
     });
     await alert.present();
   }
+  username = '';
+  userId = '';
+  cashierShiftId = '';
+  resetButtonAccess: boolean = false;
   ionViewWillEnter() {
     this.printer = this.constant.bluetoothAddress;
     this.service.getGateInfo().subscribe((data) => {
       this.settings = data;
     });
+    const userInfoString = localStorage.getItem('userInfo');
+    if (userInfoString) {
+      const userInfo = JSON.parse(userInfoString);
+      const cashierId = userInfo.Id;
+      const cashierName = userInfo.Name;
+      this.username = cashierName;
+      this.userId = cashierId;
+    }
+    const cashierShiftId = localStorage.getItem('cashierShiftId');
+    this.cashierShiftId = cashierShiftId;
+
+    const userAccessStr = localStorage.getItem('userAccess');
+    if (userAccessStr) {
+      const userAccess = JSON.parse(userAccessStr) as UserAccessMatrix[];
+      console.log(userAccess);
+      this.resetButtonAccess = userAccess.some(
+        (a) => a.code === 'HHPOSRESET' && a.canAccess
+      );
+    }
   }
 }

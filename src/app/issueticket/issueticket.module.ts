@@ -9,6 +9,7 @@ import { Constants } from '../config/constants';
 import { Printer, PrintOptions } from '@awesome-cordova-plugins/printer/ngx';
 import { Device } from '@ionic-native/device/ngx';
 import { BluetoothSerial } from '@ionic-native/bluetooth-serial/ngx';
+import { StatusComponentModule } from '../components/status/status.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -16,8 +17,9 @@ import { BluetoothSerial } from '@ionic-native/bluetooth-serial/ngx';
     IonicModule,
     IssueticketPageRoutingModule,
     HttpClientModule,
+    StatusComponentModule,
   ],
-  providers: [Printer,Device,BluetoothSerial],
+  providers: [Printer, Device, BluetoothSerial],
   declarations: [IssueticketPage],
 })
 export class IssueticketPageModule {}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Component, OnInit } from '@angular/core';
 import { LoadingController, Platform } from '@ionic/angular';
 import { OfficialReceipt } from '../models/OfficialReceipt';
@@ -24,7 +25,7 @@ export class ReprintorPage implements OnInit {
 
   async loadData() {
     this.auditLogs
-      .buttonClicked('Search Button - Reprint OR')
+      .buttonClicked('Search Button - Reprint OR', this.userId)
       .subscribe((a) => {});
     this.officialreceiptlist = [];
     this.service.loadOfficialReceipts(this.keyword).subscribe((data) => {
@@ -40,9 +41,27 @@ export class ReprintorPage implements OnInit {
     });
   }
   async reprint(id: any) {
-    this.auditLogs.buttonClicked('Reprint OR').subscribe((a) => {});
+    this.auditLogs
+      .buttonClicked('Reprint OR', this.userId)
+      .subscribe((a) => {});
     this.service.reprintOfficialReceipt(id).subscribe((data) => {
+      console.log(data.Printable);
       this.printer.print(data.Printable);
     });
+  }
+  username = '';
+  userId = '';
+  cashierShiftId = '';
+  ionViewWillEnter() {
+    const userInfoString = localStorage.getItem('userInfo');
+    if (userInfoString) {
+      const userInfo = JSON.parse(userInfoString);
+      const cashierId = userInfo.Id;
+      const cashierName = userInfo.Name;
+      this.username = cashierName;
+      this.userId = cashierId;
+    }
+    const cashierShiftId = localStorage.getItem('cashierShiftId');
+    this.cashierShiftId = cashierShiftId;
   }
 }

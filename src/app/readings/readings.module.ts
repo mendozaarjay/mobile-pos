@@ -7,14 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { ReadingsPageRoutingModule } from './readings-routing.module';
 
 import { ReadingsPage } from './readings.page';
-
+import { StatusComponentModule } from '../components/status/status.component';
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ReadingsPageRoutingModule
+    ReadingsPageRoutingModule,
+    StatusComponentModule,
   ],
-  declarations: [ReadingsPage]
+  declarations: [ReadingsPage],
 })
 export class ReadingsPageModule {}

@@ -13,6 +13,7 @@
       <ion-title>Transactions</ion-title>
     </ion-toolbar>
   </ion-header>
+  <app-status></app-status>
   <br />
   <ion-row>
     <ion-col>
@@ -21,6 +22,7 @@
         color="primary"
         expand="block"
         (click)="goToIssueTicket()"
+        [disabled]="!issueTicketAccess"
         >Issue Ticket</ion-button
       >
     </ion-col>
@@ -32,6 +34,7 @@
         color="success"
         expand="block"
         (click)="goToIssueOR()"
+        [disabled]="!issueORAccess"
         >Issue OR</ion-button
       >
     </ion-col>
@@ -43,6 +46,7 @@
         color="secondary"
         expand="block"
         (click)="goToReadings()"
+        [disabled]="!readingAccess"
         >Readings</ion-button
       >
     </ion-col>
@@ -54,6 +58,7 @@
         color="tertiary"
         expand="block"
         (click)="goToReprintOr()"
+        [disabled]="!reprintORAccess"
         >Reprint OR</ion-button
       >
     </ion-col>
@@ -65,6 +70,7 @@
         color="warning"
         expand="block"
         (click)="goToReprintTicket()"
+        [disabled]="!reprintTicketAccess"
         >Reprint Ticket</ion-button
       >
     </ion-col>
@@ -77,6 +83,7 @@
         color="primary"
         expand="block"
         (click)="goToReprintReadings()"
+        [disabled]="!reprintReadingAccess"
         >Reprint Readings</ion-button
       >
     </ion-col>

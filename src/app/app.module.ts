@@ -9,11 +9,22 @@ import { AppComponent } from './app.component';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { BluetoothSerial } from '@ionic-native/bluetooth-serial/ngx';
 import { IonicStorageModule } from '@ionic/storage-angular';
+import { StatusComponentModule } from './components/status/status.component';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule,HttpClientModule, IonicStorageModule.forRoot()],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, BluetoothSerial],
+  imports: [
+    BrowserModule,
+    StatusComponentModule,
+    IonicModule.forRoot(),
+    AppRoutingModule,
+    HttpClientModule,
+    IonicStorageModule.forRoot(),
+  ],
+  providers: [
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    BluetoothSerial,
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

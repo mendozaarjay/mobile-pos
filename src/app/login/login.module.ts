@@ -8,14 +8,15 @@ import { LoginPageRoutingModule } from './login-routing.module';
 
 import { LoginPage } from './login.page';
 import { HttpClientModule } from '@angular/common/http';
-
+import { StatusComponentModule } from '../components/status/status.component';
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
     LoginPageRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    StatusComponentModule,
   ],
   declarations: [LoginPage]
 })

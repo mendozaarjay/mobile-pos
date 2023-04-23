@@ -7,13 +7,14 @@ import { IonicModule } from '@ionic/angular';
 import { ReprintreadingsPageRoutingModule } from './reprintreadings-routing.module';
 
 import { ReprintreadingsPage } from './reprintreadings.page';
-
+import { StatusComponentModule } from '../components/status/status.component';
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ReprintreadingsPageRoutingModule
+    ReprintreadingsPageRoutingModule,
+    StatusComponentModule
   ],
   declarations: [ReprintreadingsPage]
 })

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Component, OnInit } from '@angular/core';
 import { LoadingController, Platform } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -83,12 +84,12 @@ export class TenderdeclarationPage implements OnInit {
     item.php5 = this.php5;
     item.php50 = this.php50;
     item.php500 = this.php500;
-    this.service.confirmTender(item).subscribe(
+    this.service.confirmTender(item, this.cashierShiftId).subscribe(
       (result) => {
         if (result.includes('success')) {
           this.isConfirmed = true;
           this.auditLogs
-            .confirmedTenderDeclaration(this.totalconfirmed)
+            .confirmedTenderDeclaration(this.totalconfirmed, this.userId)
             .subscribe((a) => {});
         }
       },
@@ -99,11 +100,11 @@ export class TenderdeclarationPage implements OnInit {
   }
 
   async printTender() {
-    this.service.getTenderPrintable().subscribe(
+    this.service.getTenderPrintable(this.cashierShiftId).subscribe(
       (result) => {
         this.printer.print(result.Body);
         this.auditLogs
-          .printedTenderDeclaration(this.totalconfirmed)
+          .printedTenderDeclaration(this.totalconfirmed, this.userId)
           .subscribe((a) => {});
       },
       (error) => {
@@ -116,8 +117,24 @@ export class TenderdeclarationPage implements OnInit {
     this.router.navigateByUrl('/home');
   }
   async logOut() {
-    this.userService.logOut().subscribe((data) => {
+    localStorage.clear();
+    this.userService.logOut(this.userId).subscribe((data) => {
       this.router.navigateByUrl('');
     });
+  }
+  username = '';
+  userId = '';
+  cashierShiftId = '';
+  ionViewWillEnter() {
+    const userInfoString = localStorage.getItem('userInfo');
+    if (userInfoString) {
+      const userInfo = JSON.parse(userInfoString);
+      const cashierId = userInfo.Id;
+      const cashierName = userInfo.Name;
+      this.username = cashierName;
+      this.userId = cashierId;
+    }
+    const cashierShiftId = localStorage.getItem('cashierShiftId');
+    this.cashierShiftId = cashierShiftId;
   }
 }

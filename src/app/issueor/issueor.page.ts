@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-inferrable-types */
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Component, OnInit } from '@angular/core';
 import { LoadingController } from '@ionic/angular';
 import { ParkerType } from '../models/ParkerType';
@@ -10,6 +12,7 @@ import { Router } from '@angular/router';
 import { OfficialReceiptService } from '../services/official-receipt.service';
 import { DynamicPrinterService } from '../services/dynamic-printer.service';
 import { AuditLogService } from '../services/audit-log.service';
+import { UserLogInService } from '../services/user-log-in.service';
 
 @Component({
   selector: 'app-issueor',
@@ -43,6 +46,7 @@ export class IssueorPage implements OnInit {
   totalamount: number;
   reference = '';
   isrefenable = false;
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   isPrinting: boolean = false;
   constructor(
     public loadingController: LoadingController,
@@ -51,7 +55,8 @@ export class IssueorPage implements OnInit {
     private storage: Storage,
     private service: OfficialReceiptService,
     private printer: DynamicPrinterService,
-    private auditLogs: AuditLogService
+    private auditLogs: AuditLogService,
+    private loginService: UserLogInService
   ) {}
 
   ngOnInit() {
@@ -104,7 +109,9 @@ export class IssueorPage implements OnInit {
     });
   }
   async computeRate() {
-    this.auditLogs.buttonClicked('Compute OR Button').subscribe((a) => {});
+    this.auditLogs
+      .buttonClicked('Compute OR Button', this.userId)
+      .subscribe((a) => {});
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'Cannot Continue',
@@ -167,7 +174,14 @@ export class IssueorPage implements OnInit {
     }
   }
   async printOfficialReceipt() {
-    this.auditLogs.buttonClicked('Save and Print OR').subscribe((a) => {});
+    this.auditLogs
+      .buttonClicked('Save and Print OR', this.userId)
+      .subscribe((a) => {});
+
+    if (this.withReading) {
+      this.showWithReading();
+      return;
+    }
     if (this.isrefenable && this.checkRefence() === false) {
       const alert = await this.alertController.create({
         cssClass: 'my-custom-class',
@@ -176,6 +190,11 @@ export class IssueorPage implements OnInit {
         buttons: ['OK'],
       });
       await alert.present();
+      return;
+    }
+    if (this.id === '0' || this.id === '') {
+      this.officialReceiptError();
+      console.log('should return here');
       return;
     }
 
@@ -198,7 +217,7 @@ export class IssueorPage implements OnInit {
     item.transactionTypeId = this.transactionTypeId;
     item.reference = this.reference;
     this.isPrinting = true;
-    this.service.setOfficialReceipt(item).subscribe(
+    this.service.setOfficialReceipt(item, this.userId).subscribe(
       (result) => {
         this.printer.print(result.Printable);
         this.loadDefault();
@@ -213,27 +232,48 @@ export class IssueorPage implements OnInit {
   }
 
   async verifyTicket() {
-    this.auditLogs.buttonClicked('Verify Button').subscribe((a) => {});
-    this.service.verifyTicket(this.ticketNo, this.plateNo).subscribe(
-      (ticketdata) => {
-        if (ticketdata.IsCompleted === false) {
-          this.verifiedTicketNo = ticketdata.TicketNo;
-          this.plateNo = ticketdata.PlateNo;
-          this.timeIn = ticketdata.EntranceDate;
-          this.timeOut = ticketdata.ExitDate;
-          this.duration = ticketdata.Duration;
-          this.id = ticketdata.Id;
-        } else {
-          this.showAlert();
-        }
-      },
-      (error) => {
-        if (error.status === 404) {
-          this.showAlert();
-        }
-        this.loadDefault();
+    this.auditLogs
+      .buttonClicked('Verify Button', this.userId)
+      .subscribe((a) => {});
+      const shouldReturn = await new Promise((resolve) => {
+        this.loginService.checkIfWithReading().subscribe((result) => {
+          if (result) {
+            this.showWithReading();
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        });
+      });
+
+      if (shouldReturn) {
+        return;
       }
-    );
+
+    if (!this.withReading) {
+      this.service.verifyTicket(this.ticketNo, this.plateNo).subscribe(
+        (ticketdata) => {
+          if (ticketdata.IsCompleted === false) {
+            this.verifiedTicketNo = ticketdata.TicketNo;
+            this.plateNo = ticketdata.PlateNo;
+            this.timeIn = ticketdata.EntranceDate;
+            this.timeOut = ticketdata.ExitDate;
+            this.duration = ticketdata.Duration;
+            this.id = ticketdata.Id;
+          } else {
+            this.showAlert();
+          }
+        },
+        (error) => {
+          if (error.status === 404) {
+            this.showAlert();
+          }
+          this.loadDefault();
+        }
+      );
+    } else {
+      this.showWithReading();
+    }
   }
   tenderAmountChanged(event: any) {
     const inputAmount = event.target.value;
@@ -264,7 +304,8 @@ export class IssueorPage implements OnInit {
   async officialReceiptError() {
     const alert = await this.alertController.create({
       header: 'Official Receipt',
-      message: 'Cannot continue. Please check all the details before printing the official receipt.',
+      message:
+        'Cannot continue. Please check all the details before printing the official receipt.',
       buttons: ['OK'],
     });
     await alert.present();
@@ -319,7 +360,9 @@ export class IssueorPage implements OnInit {
     this.isrefenable = false;
   }
   async openModal() {
-    this.auditLogs.buttonClicked('Scan QR Button').subscribe((a) => {});
+    this.auditLogs
+      .buttonClicked('Scan QR Button', this.userId)
+      .subscribe((a) => {});
     this.route.navigateByUrl('/qrscanner');
   }
   async checkTicketViaQr() {
@@ -330,8 +373,33 @@ export class IssueorPage implements OnInit {
       this.verifyTicket();
     }
   }
+  async showWithReading() {
+    const alert = await this.alertController.create({
+      header: 'Cannot Continue.',
+      message: 'There is already a Z Reading for today.',
+      buttons: ['OK'],
+    });
+    await alert.present();
+  }
+
+  username = '';
+  userId = '';
+  cashierShiftId = '';
+  withReading: boolean = false;
   ionViewWillEnter() {
     this.getParkerTypes();
     this.checkTicketViaQr();
+    const userInfoString = localStorage.getItem('userInfo');
+    if (userInfoString) {
+      const userInfo = JSON.parse(userInfoString);
+      const cashierId = userInfo.Id;
+      const cashierName = userInfo.Name;
+      this.username = cashierName;
+      this.userId = cashierId;
+    }
+    const cashierShiftId = localStorage.getItem('cashierShiftId');
+    this.cashierShiftId = cashierShiftId;
+    const withReadingString = localStorage.getItem('withReading');
+    this.withReading = withReadingString === '1';
   }
 }

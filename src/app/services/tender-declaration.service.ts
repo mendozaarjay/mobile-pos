@@ -8,11 +8,11 @@ import { TenderDeclarationItem } from '../models/TenderDeclarationItem';
 })
 export class TenderDeclarationService {
   constructor(private httpClient: HttpClient, private constants: Constants) {}
-  confirmTender(item: TenderDeclarationItem) {
+  confirmTender(item: TenderDeclarationItem, cashierShiftId: string) {
     const url =
       this.constants.baseUrl +
       '/ticket/settenderdeclaration?id=' +
-      this.constants.cashierShiftId +
+      cashierShiftId +
       '&v1000=' +
       item.php1000 +
       '&v500=' +
@@ -37,13 +37,13 @@ export class TenderDeclarationService {
       item.comment;
     return this.httpClient.get<any>(url);
   }
-  getTenderPrintable() {
+  getTenderPrintable(cashierShiftId: string) {
     const url =
       this.constants.baseUrl +
       '/ticket/gettenderdeclaration?gateid=' +
       this.constants.gateId +
       '&id=' +
-      this.constants.cashierShiftId;
+      cashierShiftId;
     return this.httpClient.get<any>(url);
   }
 }

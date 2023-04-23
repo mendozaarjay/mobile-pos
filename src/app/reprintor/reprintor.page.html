@@ -6,7 +6,7 @@
     <ion-title>Reprint Official Receipt</ion-title>
   </ion-toolbar>
 </ion-header>
-
+<app-status></app-status>
 <ion-content>
   <ion-item>
     <ion-label>Search Term:</ion-label>
@@ -26,9 +26,10 @@
   </ion-row>
 
   <ion-list>
-    <ion-list-header><h2>Search Result : {{officialreceiptlist.length}}</h2></ion-list-header>
+    <ion-list-header
+      ><h2>Search Result : {{officialreceiptlist.length}}</h2></ion-list-header
+    >
     <ion-item *ngFor="let item of officialreceiptlist">
-
       <ion-col>
         <ion-label>
           <h3>OR Number : {{item.ornumber}}</h3>
@@ -38,7 +39,9 @@
         </ion-label>
       </ion-col>
       <ion-col size="3">
-        <ion-button expand="block" color="success" (click)="reprint(item.id)">Reprint</ion-button>
+        <ion-button expand="block" color="success" (click)="reprint(item.id)"
+          >Reprint</ion-button
+        >
       </ion-col>
     </ion-item>
   </ion-list>

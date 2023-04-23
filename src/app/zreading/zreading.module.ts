@@ -8,14 +8,17 @@ import { ZreadingPageRoutingModule } from './zreading-routing.module';
 
 import { ZreadingPage } from './zreading.page';
 import { HttpClientModule } from '@angular/common/http';
+import { StatusComponentModule } from '../components/status/status.component';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ZreadingPageRoutingModule,HttpClientModule
+    ZreadingPageRoutingModule,
+    HttpClientModule,
+    StatusComponentModule,
   ],
-  declarations: [ZreadingPage]
+  declarations: [ZreadingPage],
 })
 export class ZreadingPageModule {}
