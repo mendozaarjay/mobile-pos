@@ -24,12 +24,30 @@ export class StatusComponent implements OnInit {
     this.checkApiStatus();
   }
   checkApiStatus() {
+    let overlay: HTMLDivElement = document.querySelector('.page-overlay');
     this.statusService.checkApiStatus().subscribe(
       (status) => {
         if (status) {
           this.statusText = 'Online';
           this.statusColor = 'success';
+          if (overlay) {
+            overlay.remove(); // Use stored reference to remove overlay element
+            overlay = undefined; // Reset overlay reference
+          }
         } else {
+          if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'page-overlay'; // Add class to overlay element
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100%';
+            overlay.style.height = '100%';
+            overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            overlay.style.zIndex = '9999';
+            document.body.appendChild(overlay);
+          }
+
           this.statusText = 'Offline';
           this.statusColor = 'medium';
         }
@@ -38,6 +56,18 @@ export class StatusComponent implements OnInit {
         console.log('Error checking API status:', error);
         this.statusText = 'Offline';
         this.statusColor = 'medium';
+        if (!overlay) {
+          overlay = document.createElement('div');
+          overlay.className = 'page-overlay'; // Add class to overlay element
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100%';
+          overlay.style.height = '100%';
+          overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+          overlay.style.zIndex = '9999';
+          document.body.appendChild(overlay);
+        }
       }
     );
   }
