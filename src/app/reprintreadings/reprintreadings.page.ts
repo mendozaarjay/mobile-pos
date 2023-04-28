@@ -1,17 +1,20 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { ReadingItem } from '../models/ReadingItem.model';
 import { AuditLogService } from '../services/audit-log.service';
 import { DynamicPrinterService } from '../services/dynamic-printer.service';
 import { ReadingsService } from '../services/readings.service';
-
+import { StatusComponent } from '../components/status/status.component';
+import { interval } from 'rxjs';
 @Component({
   selector: 'app-reprintreadings',
   templateUrl: './reprintreadings.page.html',
   styleUrls: ['./reprintreadings.page.scss'],
 })
 export class ReprintreadingsPage implements OnInit {
+  @ViewChild(StatusComponent) statusComponent!: StatusComponent;
+
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   keyword: string = '';
   readingType: string;
@@ -86,6 +89,9 @@ export class ReprintreadingsPage implements OnInit {
   userId = '';
   cashierShiftId = '';
   ionViewWillEnter() {
+    interval(5000).subscribe(() => {
+      this.statusComponent.checkApiStatus();
+    });
     const userInfoString = localStorage.getItem('userInfo');
     if (userInfoString) {
       const userInfo = JSON.parse(userInfoString);

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 /* eslint-disable @typescript-eslint/member-ordering */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { LoadingController } from '@ionic/angular';
 import { ParkerType } from '../models/ParkerType';
 import { AlertController } from '@ionic/angular';
@@ -13,13 +13,15 @@ import { OfficialReceiptService } from '../services/official-receipt.service';
 import { DynamicPrinterService } from '../services/dynamic-printer.service';
 import { AuditLogService } from '../services/audit-log.service';
 import { UserLogInService } from '../services/user-log-in.service';
-
+import { StatusComponent } from '../components/status/status.component';
+import { interval } from 'rxjs';
 @Component({
   selector: 'app-issueor',
   templateUrl: './issueor.page.html',
   styleUrls: ['./issueor.page.scss'],
 })
 export class IssueorPage implements OnInit {
+  @ViewChild(StatusComponent) statusComponent!: StatusComponent;
   isModalOpen = false;
   scanActive = false;
   id = '';
@@ -235,20 +237,20 @@ export class IssueorPage implements OnInit {
     this.auditLogs
       .buttonClicked('Verify Button', this.userId)
       .subscribe((a) => {});
-      const shouldReturn = await new Promise((resolve) => {
-        this.loginService.checkIfWithReading().subscribe((result) => {
-          if (result) {
-            this.showWithReading();
-            resolve(true);
-          } else {
-            resolve(false);
-          }
-        });
+    const shouldReturn = await new Promise((resolve) => {
+      this.loginService.checkIfWithReading().subscribe((result) => {
+        if (result) {
+          this.showWithReading();
+          resolve(true);
+        } else {
+          resolve(false);
+        }
       });
+    });
 
-      if (shouldReturn) {
-        return;
-      }
+    if (shouldReturn) {
+      return;
+    }
 
     if (!this.withReading) {
       this.service.verifyTicket(this.ticketNo, this.plateNo).subscribe(
@@ -387,6 +389,9 @@ export class IssueorPage implements OnInit {
   cashierShiftId = '';
   withReading: boolean = false;
   ionViewWillEnter() {
+    interval(5000).subscribe(() => {
+      this.statusComponent.checkApiStatus();
+    });
     this.getParkerTypes();
     this.checkTicketViaQr();
     const userInfoString = localStorage.getItem('userInfo');

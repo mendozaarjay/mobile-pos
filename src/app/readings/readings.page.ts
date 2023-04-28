@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuditLogService } from '../services/audit-log.service';
+import { StatusComponent } from '../components/status/status.component';
+import { interval } from 'rxjs';
 
 @Component({
   selector: 'app-readings',
@@ -9,6 +11,7 @@ import { AuditLogService } from '../services/audit-log.service';
   styleUrls: ['./readings.page.scss'],
 })
 export class ReadingsPage implements OnInit {
+  @ViewChild(StatusComponent) statusComponent!: StatusComponent;
   constructor(private router: Router, private auditLogs: AuditLogService) {}
 
   ngOnInit() {}
@@ -34,6 +37,9 @@ export class ReadingsPage implements OnInit {
   userId = '';
   cashierShiftId = '';
   ionViewWillEnter() {
+    interval(5000).subscribe(() => {
+      this.statusComponent.checkApiStatus();
+    });
     const userInfoString = localStorage.getItem('userInfo');
     if (userInfoString) {
       const userInfo = JSON.parse(userInfoString);

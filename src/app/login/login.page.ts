@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Constants } from '../config/constants';
 import { AlertController } from '@ionic/angular';
@@ -6,13 +6,15 @@ import { UserLogInService } from '../services/user-log-in.service';
 import { AuditLogService } from '../services/audit-log.service';
 import { UserAccessMatrix } from '../models/UserAcessMatrix';
 import { StatusService } from '../services/status.service';
-
+import { StatusComponent } from '../components/status/status.component';
+import { interval } from 'rxjs';
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
+  @ViewChild(StatusComponent) statusComponent!: StatusComponent;
   username = '';
   password = '';
   version = '';
@@ -24,7 +26,7 @@ export class LoginPage implements OnInit {
     public alertController: AlertController,
     private service: UserLogInService,
     private auditLogs: AuditLogService,
-    private statusService: StatusService,
+    private statusService: StatusService
   ) {}
 
   ngOnInit() {
@@ -142,5 +144,10 @@ export class LoginPage implements OnInit {
         this.statusColor = 'medium';
       }
     );
+  }
+  ionViewWillEnter() {
+    interval(5000).subscribe(() => {
+      this.statusComponent.checkApiStatus();
+    });
   }
 }

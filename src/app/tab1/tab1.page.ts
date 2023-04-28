@@ -2,19 +2,22 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 /* eslint-disable no-var */
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Printer, PrintOptions } from '@ionic-native/printer/ngx';
 import { LoadingController } from '@ionic/angular';
 import { Constants } from '../config/constants';
 import { Router } from '@angular/router';
 import { AuditLogService } from '../services/audit-log.service';
 import { UserAccessMatrix } from '../models/UserAcessMatrix';
+import { StatusComponent } from '../components/status/status.component';
+import { interval } from 'rxjs';
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss'],
 })
 export class Tab1Page implements OnInit {
+  @ViewChild(StatusComponent) statusComponent!: StatusComponent;
   username = '';
   cashierShiftId = '';
   userId = '';
@@ -116,6 +119,9 @@ export class Tab1Page implements OnInit {
   reprintTicketAccess: boolean = false;
 
   ionViewWillEnter() {
+    interval(5000).subscribe(() => {
+      this.statusComponent.checkApiStatus();
+    });
     const userInfoString = localStorage.getItem('userInfo');
     if (userInfoString) {
       const userInfo = JSON.parse(userInfoString);

@@ -1,16 +1,20 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { LoadingController, Platform } from '@ionic/angular';
 import { OfficialReceipt } from '../models/OfficialReceipt';
 import { AuditLogService } from '../services/audit-log.service';
 import { DynamicPrinterService } from '../services/dynamic-printer.service';
 import { OfficialReceiptService } from '../services/official-receipt.service';
+import { StatusComponent } from '../components/status/status.component';
+import { interval } from 'rxjs';
+
 @Component({
   selector: 'app-reprintor',
   templateUrl: './reprintor.page.html',
   styleUrls: ['./reprintor.page.scss'],
 })
 export class ReprintorPage implements OnInit {
+  @ViewChild(StatusComponent) statusComponent!: StatusComponent;
   officialreceiptlist: OfficialReceipt[] = [];
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   keyword: string = '';
@@ -53,6 +57,10 @@ export class ReprintorPage implements OnInit {
   userId = '';
   cashierShiftId = '';
   ionViewWillEnter() {
+    interval(5000).subscribe(() => {
+      this.statusComponent.checkApiStatus();
+    });
+
     const userInfoString = localStorage.getItem('userInfo');
     if (userInfoString) {
       const userInfo = JSON.parse(userInfoString);

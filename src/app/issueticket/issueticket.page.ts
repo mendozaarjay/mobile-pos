@@ -1,17 +1,20 @@
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 /* eslint-disable @typescript-eslint/member-ordering */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AlertController, LoadingController, Platform } from '@ionic/angular';
 import { AuditLogService } from '../services/audit-log.service';
 import { DynamicPrinterService } from '../services/dynamic-printer.service';
 import { TicketIssuanceService } from '../services/ticket-issuance.service';
 import { UserLogInService } from '../services/user-log-in.service';
+import { StatusComponent } from '../components/status/status.component';
+import { interval } from 'rxjs';
 @Component({
   selector: 'app-issueticket',
   templateUrl: './issueticket.page.html',
   styleUrls: ['./issueticket.page.scss'],
 })
 export class IssueticketPage implements OnInit {
+  @ViewChild(StatusComponent) statusComponent!: StatusComponent;
   plateNo = '';
   ticketNo = '';
 
@@ -28,9 +31,7 @@ export class IssueticketPage implements OnInit {
     this.loadNextTicket();
   }
   async presentLoading() {
-    this.auditLogs
-    .issueTicket(this.ticketNo, this.userId)
-    .subscribe((a) => {});
+    this.auditLogs.issueTicket(this.ticketNo, this.userId).subscribe((a) => {});
 
     const shouldReturn = await new Promise((resolve) => {
       this.loginService.checkIfWithReading().subscribe((result) => {
@@ -47,7 +48,7 @@ export class IssueticketPage implements OnInit {
       return;
     }
 
-    if(!this.withReading){
+    if (!this.withReading) {
       const loading = await this.loadingController.create({
         cssClass: 'my-custom-class',
         message: 'Please wait while printing ticket...',
@@ -65,8 +66,7 @@ export class IssueticketPage implements OnInit {
       await this.loadNextTicket();
       this.plateNo = '';
       const { role, data } = await loading.onDidDismiss();
-    }
-    else{
+    } else {
       this.showWithReading();
     }
   }
@@ -89,6 +89,9 @@ export class IssueticketPage implements OnInit {
   cashierShiftId = '';
   withReading: boolean = false;
   ionViewWillEnter() {
+    interval(5000).subscribe(() => {
+      this.statusComponent.checkApiStatus();
+    });
     const userInfoString = localStorage.getItem('userInfo');
     if (userInfoString) {
       const userInfo = JSON.parse(userInfoString);

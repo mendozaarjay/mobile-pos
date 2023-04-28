@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 /* eslint-disable @typescript-eslint/member-ordering */
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { LoadingController } from '@ionic/angular';
 import { Constants } from '../config/constants';
 import { AlertController } from '@ionic/angular';
@@ -8,12 +8,15 @@ import { AuditLogService } from '../services/audit-log.service';
 import { SettingsService } from '../services/settings.service';
 import { GateInformation } from '../models/GateInformation';
 import { UserAccessMatrix } from '../models/UserAcessMatrix';
+import { StatusComponent } from '../components/status/status.component';
+import { interval } from 'rxjs';
 @Component({
   selector: 'app-tab3',
   templateUrl: 'tab3.page.html',
   styleUrls: ['tab3.page.scss'],
 })
 export class Tab3Page {
+  @ViewChild(StatusComponent) statusComponent!: StatusComponent;
   handlerMessage: string;
   printer: string;
   settings: GateInformation = {} as GateInformation;
@@ -75,6 +78,9 @@ export class Tab3Page {
   cashierShiftId = '';
   resetButtonAccess: boolean = false;
   ionViewWillEnter() {
+    interval(5000).subscribe(() => {
+      this.statusComponent.checkApiStatus();
+    });
     this.printer = this.constant.bluetoothAddress;
     this.service.getGateInfo().subscribe((data) => {
       this.settings = data;

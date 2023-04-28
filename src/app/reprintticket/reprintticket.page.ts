@@ -1,15 +1,18 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { TicketItem } from '../models/TicketItem';
 import { AuditLogService } from '../services/audit-log.service';
 import { DynamicPrinterService } from '../services/dynamic-printer.service';
 import { ReprintserviceService } from '../services/reprintservice.service';
+import { StatusComponent } from '../components/status/status.component';
+import { interval } from 'rxjs';
 @Component({
   selector: 'app-reprintticket',
   templateUrl: './reprintticket.page.html',
   styleUrls: ['./reprintticket.page.scss'],
 })
 export class ReprintticketPage implements OnInit {
+  @ViewChild(StatusComponent) statusComponent!: StatusComponent;
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   keyword: string = '';
   tickets: TicketItem[] = [];
@@ -41,6 +44,9 @@ export class ReprintticketPage implements OnInit {
   userId = '';
   cashierShiftId = '';
   ionViewWillEnter() {
+    interval(5000).subscribe(() => {
+      this.statusComponent.checkApiStatus();
+    });
     const userInfoString = localStorage.getItem('userInfo');
     if (userInfoString) {
       const userInfo = JSON.parse(userInfoString);
