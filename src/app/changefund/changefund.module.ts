@@ -11,14 +11,16 @@ import { Constants } from '../config/constants';
 import { Printer, PrintOptions } from '@awesome-cordova-plugins/printer/ngx';
 import { Device } from '@ionic-native/device/ngx';
 import { BluetoothSerial } from '@ionic-native/bluetooth-serial/ngx';
+import { StatusComponentModule } from '../components/status/status.component';
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ChangefundPageRoutingModule
+    ChangefundPageRoutingModule,
+    StatusComponentModule,
   ],
   providers: [Printer, Device, BluetoothSerial],
-  declarations: [ChangefundPage]
+  declarations: [ChangefundPage],
 })
 export class ChangefundPageModule {}

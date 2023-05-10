@@ -12,7 +12,7 @@ import { Constants } from '../config/constants';
 import { Printer, PrintOptions } from '@awesome-cordova-plugins/printer/ngx';
 import { Device } from '@ionic-native/device/ngx';
 import { BluetoothSerial } from '@ionic-native/bluetooth-serial/ngx';
-
+import { StatusComponentModule } from '../components/status/status.component';
 @NgModule({
   imports: [
     HttpClientModule,
@@ -20,6 +20,7 @@ import { BluetoothSerial } from '@ionic-native/bluetooth-serial/ngx';
     FormsModule,
     IonicModule,
     TenderdeclarationPageRoutingModule,
+    StatusComponentModule
   ],
   providers: [Printer, Device, BluetoothSerial],
   declarations: [TenderdeclarationPage],
