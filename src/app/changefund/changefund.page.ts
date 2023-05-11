@@ -64,7 +64,7 @@ export class ChangefundPage implements OnInit {
   async printData(printingdata) {
     const loading = await this.loadingController.create({
       cssClass: 'my-custom-class',
-      message: 'Please wait while printing tender declaration...',
+      message: 'Please wait while printing change fund...',
       duration: 3000,
     });
     await loading.present();
