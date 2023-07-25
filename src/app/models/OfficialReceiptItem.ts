@@ -1,12 +1,15 @@
-export class OfficialReceiptItem {
-  public id: any;
-  public ticketNo: any;
-  public parkerTypeId: any;
-  public tenderAmount: any;
-  public change: any;
-  public totalamount: any;
-  public discountTypeId: any;
-  public discount: any;
-  public transactionTypeId: any;
-  public reference: any;
+export interface OfficialReceiptItem {
+  ticketNo: any;
+  transitId: any;
+  gate: any;
+  parkerType: any;
+  tenderAmount: any;
+  change: any;
+  totalAmount: any;
+  userId: any;
+  discountId: any;
+  discountAmount: any;
+  cashlessType: any;
+  cashlessReference: any;
+  vatAmount: any;
 }

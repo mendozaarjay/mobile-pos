@@ -30,41 +30,8 @@ export class OfficialReceiptService {
     return this.httpClient.get<any>(url);
   }
   setOfficialReceipt(item: OfficialReceiptItem, userId: string) {
-    const url =
-      this.constants.baseUrl +
-      '/ticket/officialreceipt?' +
-      'ticketno=' +
-      item.ticketNo +
-      '&' +
-      'transitid=' +
-      item.id +
-      '&' +
-      'gate=' +
-      this.constants.gateId +
-      '&' +
-      'parkertype=' +
-      item.parkerTypeId +
-      '&' +
-      'tenderamount=' +
-      item.tenderAmount +
-      '&' +
-      'change=' +
-      item.change +
-      '&' +
-      'totalamount=' +
-      item.totalamount +
-      '&' +
-      'userid=' +
-      userId +
-      '&discountid=' +
-      item.discountTypeId +
-      '&discountamount=' +
-      item.discount +
-      '&cashlesstype=' +
-      item.transactionTypeId +
-      '&cashlessreference=' +
-      item.reference;
-    return this.httpClient.get<any>(url);
+    const url = this.constants.baseUrl + '/ticket/officialreceipt';
+    return this.httpClient.post<any>(url, item);
   }
   verifyTicket(ticketNo: any, plateNo: any) {
     const url =

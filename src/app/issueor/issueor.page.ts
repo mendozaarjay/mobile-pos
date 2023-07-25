@@ -1,3 +1,5 @@
+/* eslint-disable no-var */
+/* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 /* eslint-disable @typescript-eslint/member-ordering */
 import { Component, OnInit, ViewChild } from '@angular/core';
@@ -15,6 +17,7 @@ import { AuditLogService } from '../services/audit-log.service';
 import { UserLogInService } from '../services/user-log-in.service';
 import { StatusComponent } from '../components/status/status.component';
 import { interval } from 'rxjs';
+import { Constants } from '../config/constants';
 @Component({
   selector: 'app-issueor',
   templateUrl: './issueor.page.html',
@@ -58,7 +61,8 @@ export class IssueorPage implements OnInit {
     private service: OfficialReceiptService,
     private printer: DynamicPrinterService,
     private auditLogs: AuditLogService,
-    private loginService: UserLogInService
+    private loginService: UserLogInService,
+    private constant: Constants
   ) {}
 
   ngOnInit() {
@@ -140,21 +144,37 @@ export class IssueorPage implements OnInit {
       return;
     }
     this.service.getRate(this.id, this.parkerTypeId).subscribe((data) => {
-      this.totalamount = data.Amount - this.discount;
-      this.fee = data.Amount - this.discount;
-
       this.service.checkIfVatable(this.parkerTypeId).subscribe((vatable) => {
         if (vatable === true) {
-          const computedVat = (this.totalamount * 0.12) / 1.12;
-          this.vat = computedVat;
+          let vatable = data.Amount * 1.12;
+          let vat = vatable - data.Amount;
+          this.vat = vat;
         } else {
           this.vat = 0;
         }
       });
-
-      if (this.tenderamount > 0) {
-        this.change = this.tenderamount - this.totalamount;
+      if (this.discountTypeId !== 0 || this.discountTypeId) {
+        const selected = this.discountTypes.find(
+          (a) => a.id === this.discountTypeId
+        );
+        if (selected.type === 2) {
+          this.discount = selected.amount;
+          this.fee = data.Amount;
+          this.totalamount = data.Amount - selected.amount;
+        } else {
+          var percentage = selected.amount / 100;
+          var discount = data.Amount * percentage;
+          this.discount = discount;
+          this.fee = data.Amount;
+          this.totalamount = data.Amount - discount;
+        }
+      } else {
+        this.discount = 0;
+        this.fee = data.Amount;
+        this.totalamount = data.Amount;
       }
+
+      this.change = this.tenderamount - this.totalamount;
     });
   }
   async presentLoading() {
@@ -207,20 +227,24 @@ export class IssueorPage implements OnInit {
     });
     await loading.present();
 
-    const item = new OfficialReceiptItem();
-    item.id = this.id;
+    const item: OfficialReceiptItem = {} as OfficialReceiptItem;
+    item.transitId = this.id;
     item.ticketNo = this.ticketNo;
-    item.parkerTypeId = this.parkerTypeId;
+    item.parkerType = this.parkerTypeId;
     item.tenderAmount = this.tenderamount;
     item.change = this.change;
-    item.totalamount = this.totalamount;
-    item.discountTypeId = this.discountTypeId;
-    item.discount = this.discount;
-    item.transactionTypeId = this.transactionTypeId;
-    item.reference = this.reference;
+    item.totalAmount = this.totalamount;
+    item.discountId = this.discountTypeId;
+    item.discountAmount = this.discount;
+    item.cashlessType = this.transactionTypeId;
+    item.cashlessReference = this.reference;
+    item.vatAmount = this.vat;
+    item.userId = this.userId;
+    item.gate = this.constant.gateId;
     this.isPrinting = true;
     this.service.setOfficialReceipt(item, this.userId).subscribe(
       (result) => {
+        console.log(result.Printable);
         this.printer.print(result.Printable);
         this.loadDefault();
         this.isPrinting = false;
@@ -313,16 +337,16 @@ export class IssueorPage implements OnInit {
     await alert.present();
   }
   calculateDiscount() {
-    if (this.discountTypeId !== 0) {
-      const selected = this.discountTypes.find(
-        (a) => a.id === this.discountTypeId
-      );
-      if (selected.type === 1) {
-        this.discount = selected.amount;
-      } else {
-        this.discount = (selected.amount / this.totalamount) * 100;
-      }
-    }
+    // if (this.discountTypeId !== 0) {
+    //   const selected = this.discountTypes.find(
+    //     (a) => a.id === this.discountTypeId
+    //   );
+    //   if (selected.type === 2) {
+    //     this.discount = selected.amount;
+    //   } else {
+    //     this.discount = (selected.amount / this.totalamount) * 100;
+    //   }
+    // }
   }
   typeChanged(event: any) {
     const id = event.target.value;
