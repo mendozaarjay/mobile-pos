@@ -49,10 +49,16 @@ export class IssueorPage implements OnInit {
   fee: number;
   change: number;
   totalamount: number;
+  vatablesales: number;
   reference = '';
   isrefenable = false;
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   isPrinting: boolean = false;
+  withDiscount: boolean = false;
+  customerName: string = '';
+  customerAddress: string = '';
+  customerTin: string = '';
+  customerId: string = '';
   constructor(
     public loadingController: LoadingController,
     public alertController: AlertController,
@@ -144,36 +150,27 @@ export class IssueorPage implements OnInit {
       return;
     }
     this.service.getRate(this.id, this.parkerTypeId).subscribe((data) => {
-      this.service.checkIfVatable(this.parkerTypeId).subscribe((vatable) => {
-        if (vatable === true) {
-          let vatable = data.Amount * 1.12;
-          let vat = vatable - data.Amount;
-          this.vat = vat;
-        } else {
-          this.vat = 0;
-        }
-      });
+      let fee = data.Amount;
+      let vatableSales = fee / 1.12;
+      let vatAmount = fee - vatableSales;
+      let discountAmount = 0;
       if (this.discountTypeId !== 0 || this.discountTypeId) {
         const selected = this.discountTypes.find(
           (a) => a.id === this.discountTypeId
         );
         if (selected.type === 2) {
-          this.discount = selected.amount;
-          this.fee = data.Amount;
-          this.totalamount = data.Amount - selected.amount;
+          discountAmount = selected.amount;
         } else {
           var percentage = selected.amount / 100;
-          var discount = data.Amount * percentage;
-          this.discount = discount;
-          this.fee = data.Amount;
-          this.totalamount = data.Amount - discount;
+          discountAmount = vatableSales * percentage;
         }
       } else {
-        this.discount = 0;
-        this.fee = data.Amount;
-        this.totalamount = data.Amount;
+        discountAmount = 0;
       }
-
+      this.vatablesales = vatableSales;
+      this.vat = vatAmount;
+      this.fee = fee;
+      this.totalamount = vatableSales - discountAmount;
       this.change = this.tenderamount - this.totalamount;
     });
   }
@@ -195,6 +192,18 @@ export class IssueorPage implements OnInit {
       return false;
     }
   }
+  checkCustomer(): boolean {
+    if (
+      this.customerName.length <= 0 ||
+      this.customerAddress.length <= 0 ||
+      this.customerTin.length <= 0 ||
+      this.customerId.length <= 0
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }
   async printOfficialReceipt() {
     this.auditLogs
       .buttonClicked('Save and Print OR', this.userId)
@@ -209,6 +218,16 @@ export class IssueorPage implements OnInit {
         cssClass: 'my-custom-class',
         header: 'Cannot Continue',
         message: 'Please provide cashless reference type.',
+        buttons: ['OK'],
+      });
+      await alert.present();
+      return;
+    }
+    if (this.withDiscount && this.checkCustomer() === false) {
+      const alert = await this.alertController.create({
+        cssClass: 'my-custom-class',
+        header: 'Cannot Continue',
+        message: 'Please provide customer name, address, tin and id.',
         buttons: ['OK'],
       });
       await alert.present();
@@ -241,6 +260,10 @@ export class IssueorPage implements OnInit {
     item.vatAmount = this.vat;
     item.userId = this.userId;
     item.gate = this.constant.gateId;
+    item.customerAddress = this.customerAddress;
+    item.customerName = this.customerName;
+    item.customerTin = this.customerTin;
+    item.customerId = this.customerId;
     this.isPrinting = true;
     this.service.setOfficialReceipt(item, this.userId).subscribe(
       (result) => {
@@ -313,9 +336,11 @@ export class IssueorPage implements OnInit {
     if (id === '0' || id === 0) {
       this.isDiscountDisabled = true;
       this.discount = 0;
+      this.withDiscount = false;
     } else {
       this.isDiscountDisabled = true;
       this.calculateDiscount();
+      this.withDiscount = true;
     }
     this.computeRate();
   }
@@ -384,6 +409,11 @@ export class IssueorPage implements OnInit {
     this.totalamount = 0;
     this.reference = '';
     this.isrefenable = false;
+    this.customerName = '';
+    this.customerAddress = '';
+    this.customerTin = '';
+    this.customerId = '';
+    this.vatablesales = 0;
   }
   async openModal() {
     this.auditLogs

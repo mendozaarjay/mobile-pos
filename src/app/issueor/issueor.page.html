@@ -21,12 +21,19 @@
   <ion-grid>
     <ion-row>
       <ion-col size="6">
-        <ion-button #verify id="verify" expand="block" color="light" (click)="verifyTicket()"
+        <ion-button
+          #verify
+          id="verify"
+          expand="block"
+          color="light"
+          (click)="verifyTicket()"
           >Verify</ion-button
         >
       </ion-col>
       <ion-col size="6">
-        <ion-button expand="block" color="primary" (click) = "openModal()">Scan QR</ion-button>
+        <ion-button expand="block" color="primary" (click)="openModal()"
+          >Scan QR</ion-button
+        >
       </ion-col>
     </ion-row>
 
@@ -82,7 +89,6 @@
       [value]="reference"
       (input)="reference=$event.target.value"
       [readonly]="isrefenable === false"
-
     ></ion-input>
   </ion-item>
   <ion-item>
@@ -111,6 +117,7 @@
       >
     </ion-select>
   </ion-item>
+
   <ion-item>
     <ion-label floating>Tender Amount:</ion-label>
     <ion-input
@@ -123,19 +130,67 @@
       (keyup)="tenderAmountChanged($event)"
     ></ion-input>
   </ion-item>
+
+  <div *ngIf="withDiscount">
+    <ion-item>
+      <ion-label floating>Name:</ion-label>
+      <ion-input
+        type="text"
+        class="ion-text-right"
+        [value]="customerName"
+        (input)="customerName=$event.target.value"
+        placeholder="Customer Name"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label floating>Address:</ion-label>
+      <ion-input
+        type="text"
+        class="ion-text-right"
+        [value]="customerAddress"
+        (input)="customerAddress=$event.target.value"
+        placeholder="Customer Address"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label floating>TIN:</ion-label>
+      <ion-input
+        type="text"
+        class="ion-text-right"
+        [value]="customerTin"
+        (input)="customerTin=$event.target.value"
+        placeholder="Customer TIN"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label floating>SC/PWD I.D:</ion-label>
+      <ion-input
+        type="text"
+        class="ion-text-right"
+        [value]="customerId"
+        (input)="customerId=$event.target.value"
+        placeholder="SC/PWD I.D"
+      ></ion-input>
+    </ion-item>
+  </div>
+
   <ion-button color="light" expand="block" (click)="computeRate()"
     >Compute</ion-button
   >
   <ion-item>
-    <ion-label>Discount: {{discount}}</ion-label>
+    <ion-label>Fee: {{fee | number : '1.2-2'}}</ion-label>
   </ion-item>
-
+  <ion-item>
+    <ion-label> VATable Sales: {{vatablesales | number : '1.2-2'}}</ion-label>
+  </ion-item>
   <ion-item>
     <ion-label> VAT: {{vat | number : '1.2-2'}}</ion-label>
   </ion-item>
-
   <ion-item>
-    <ion-label>Fee: {{fee | number : '1.2-2'}}</ion-label>
+    <ion-label>Discount: {{discount}}</ion-label>
   </ion-item>
   <ion-item>
     <ion-label>Change: {{change | number : '1.2-2'}}</ion-label>
@@ -143,8 +198,6 @@
   <ion-item>
     <ion-label>Total Amount: {{totalamount | number : '1.2-2'}}</ion-label>
   </ion-item>
-
-
 </ion-content>
 
 <ion-footer>

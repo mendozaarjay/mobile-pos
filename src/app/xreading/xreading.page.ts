@@ -78,6 +78,7 @@ export class XreadingPage implements OnInit {
 
     if (!this.withReading) {
       this.service.getXReadingPrintable(this.sRNo).subscribe((readingdata) => {
+        console.log(readingdata.Body);
         this.printData(readingdata.Body);
       });
     } else {

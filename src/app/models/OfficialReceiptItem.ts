@@ -12,4 +12,8 @@ export interface OfficialReceiptItem {
   cashlessType: any;
   cashlessReference: any;
   vatAmount: any;
+  customerName: any;
+  customerAddress: any;
+  customerTin: any;
+  customerId: any;
 }

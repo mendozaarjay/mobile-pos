@@ -27,7 +27,7 @@ export class ReadingsService {
   getXReadingPrintable(srNo: string) {
     const baseUrl =
       this.constants.baseUrl +
-      '/ticket/xreading?gateid=' +
+      '/report/xreadingreport?gateid=' +
       this.constants.gateId +
       '&srno=' +
       srNo;
@@ -52,7 +52,7 @@ export class ReadingsService {
   getYReadingPrintable(srNo: string) {
     const baseUrl =
       this.constants.baseUrl +
-      '/ticket/yreading?gateid=' +
+      '/report/yreadingreport?gateid=' +
       this.constants.gateId +
       '&srno=' +
       srNo;
@@ -77,7 +77,7 @@ export class ReadingsService {
   getZReadingPrintable(srNo: string, userId: string) {
     const baseUrl =
       this.constants.baseUrl +
-      '/ticket/zreading?gateid=' +
+      '/report/zreadingreport?gateid=' +
       this.constants.gateId +
       '&srno=' +
       srNo +
@@ -102,7 +102,7 @@ export class ReadingsService {
     if (type === 'XR') {
       baseUrl =
         this.constants.baseUrl +
-        '/ticket/xreadingreprint?gateId=' +
+        '/report/xreadingreportreprint?gateId=' +
         this.constants.gateId +
         '&srNo=' +
         srNo;
@@ -110,7 +110,7 @@ export class ReadingsService {
     if (type === 'YR') {
       baseUrl =
         this.constants.baseUrl +
-        '/ticket/yreadingreprint?gateId=' +
+        '/report/yreadingreportreprint?gateId=' +
         this.constants.gateId +
         '&srNo=' +
         srNo;
@@ -118,7 +118,7 @@ export class ReadingsService {
     if (type === 'ZR') {
       baseUrl =
         this.constants.baseUrl +
-        '/ticket/zreadingreprint?gateId=' +
+        '/report/zreadingreportreprint?gateId=' +
         this.constants.gateId +
         '&srNo=' +
         srNo +

@@ -52,7 +52,7 @@
       [(ngModel)]="settings.AccreditationNo"
     ></ion-input>
   </ion-item>
-  <!-- <ion-item>
+  <ion-item *ngIf="resetButtonAccess">
     <p><i>This will reset the handheld data in the database.</i></p>
   </ion-item>
   <ion-row>
@@ -65,6 +65,6 @@
         >Reset Handheld</ion-button
       >
     </ion-col>
-  </ion-row> -->
+  </ion-row>
 </ion-content>
 <ion-footer> </ion-footer>
