@@ -170,7 +170,7 @@ export class IssueorPage implements OnInit {
       this.vatablesales = vatableSales;
       this.vat = vatAmount;
       this.fee = fee;
-      this.totalamount = vatableSales - discountAmount;
+      this.totalamount = fee - discountAmount;
       this.change = this.tenderamount - this.totalamount;
     });
   }
