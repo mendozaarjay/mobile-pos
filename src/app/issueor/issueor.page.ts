@@ -172,6 +172,7 @@ export class IssueorPage implements OnInit {
       this.fee = fee;
       this.totalamount = fee - discountAmount;
       this.change = this.tenderamount - this.totalamount;
+      this.discount = Number(discountAmount.toFixed(2));
     });
   }
   async presentLoading() {
