@@ -154,15 +154,19 @@ export class IssueorPage implements OnInit {
       let vatableSales = fee / 1.12;
       let vatAmount = fee - vatableSales;
       let discountAmount = 0;
-      if (this.discountTypeId !== 0 || this.discountTypeId) {
+      if (this.discountTypeId !== 0 || this.discountTypeId !== undefined) {
         const selected = this.discountTypes.find(
           (a) => a.id === this.discountTypeId
         );
-        if (selected.type === 2) {
-          discountAmount = selected.amount;
+        if (selected) {
+          if (selected.type === 2) {
+            discountAmount = selected.amount;
+          } else {
+            var percentage = selected.amount / 100;
+            discountAmount = vatableSales * percentage;
+          }
         } else {
-          var percentage = selected.amount / 100;
-          discountAmount = vatableSales * percentage;
+          discountAmount = 0;
         }
       } else {
         discountAmount = 0;
