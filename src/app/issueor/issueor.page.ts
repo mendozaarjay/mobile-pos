@@ -50,6 +50,7 @@ export class IssueorPage implements OnInit {
   change: number;
   totalamount: number;
   vatablesales: number;
+  vatExempt: number;
   reference = '';
   isrefenable = false;
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
@@ -154,11 +155,13 @@ export class IssueorPage implements OnInit {
       let vatableSales = fee / 1.12;
       let vatAmount = fee - vatableSales;
       let discountAmount = 0;
+      let withDiscount: boolean = false;
       if (this.discountTypeId !== 0 || this.discountTypeId !== undefined) {
         const selected = this.discountTypes.find(
           (a) => a.id === this.discountTypeId
         );
         if (selected) {
+          withDiscount = true;
           if (selected.type === 2) {
             discountAmount = selected.amount;
           } else {
@@ -171,10 +174,11 @@ export class IssueorPage implements OnInit {
       } else {
         discountAmount = 0;
       }
-      this.vatablesales = vatableSales;
-      this.vat = vatAmount;
+      this.vatablesales = withDiscount ? 0 : vatableSales;
+      this.vat = withDiscount ? 0 : vatAmount;
+      this.vatExempt = withDiscount ? vatableSales : 0;
       this.fee = fee;
-      this.totalamount = fee - discountAmount;
+      this.totalamount = withDiscount ? vatableSales - discountAmount : fee;
       this.change = this.tenderamount - this.totalamount;
       this.discount = Number(discountAmount.toFixed(2));
     });
@@ -263,6 +267,9 @@ export class IssueorPage implements OnInit {
     item.cashlessType = this.transactionTypeId;
     item.cashlessReference = this.reference;
     item.vatAmount = this.vat;
+    item.vatExempt = this.vatExempt;
+    item.fee = this.fee;
+    item.vatableSales = this.vatablesales;
     item.userId = this.userId;
     item.gate = this.constant.gateId;
     item.customerAddress = this.customerAddress;
