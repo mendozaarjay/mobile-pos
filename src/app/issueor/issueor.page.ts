@@ -218,10 +218,10 @@ export class IssueorPage implements OnInit {
       .buttonClicked('Save and Print OR', this.userId)
       .subscribe((a) => {});
 
-    if (this.withReading) {
-      this.showWithReading();
-      return;
-    }
+    // if (this.withReading) {
+    //   this.showWithReading();
+    //   return;
+    // }
     if (this.isrefenable && this.checkRefence() === false) {
       const alert = await this.alertController.create({
         cssClass: 'my-custom-class',
@@ -296,45 +296,66 @@ export class IssueorPage implements OnInit {
     this.auditLogs
       .buttonClicked('Verify Button', this.userId)
       .subscribe((a) => {});
-    const shouldReturn = await new Promise((resolve) => {
-      this.loginService.checkIfWithReading().subscribe((result) => {
-        if (result) {
-          this.showWithReading();
-          resolve(true);
+    // const shouldReturn = await new Promise((resolve) => {
+    //   this.loginService.checkIfWithReading().subscribe((result) => {
+    //     if (result) {
+    //       this.showWithReading();
+    //       resolve(true);
+    //     } else {
+    //       resolve(false);
+    //     }
+    //   });
+    // });
+
+    // if (shouldReturn) {
+    //   return;
+    // }
+
+    // if (!this.withReading) {
+    //   this.service.verifyTicket(this.ticketNo, this.plateNo).subscribe(
+    //     (ticketdata) => {
+    //       if (ticketdata.IsCompleted === false) {
+    //         this.verifiedTicketNo = ticketdata.TicketNo;
+    //         this.plateNo = ticketdata.PlateNo;
+    //         this.timeIn = ticketdata.EntranceDate;
+    //         this.timeOut = ticketdata.ExitDate;
+    //         this.duration = ticketdata.Duration;
+    //         this.id = ticketdata.Id;
+    //       } else {
+    //         this.showAlert();
+    //       }
+    //     },
+    //     (error) => {
+    //       if (error.status === 404) {
+    //         this.showAlert();
+    //       }
+    //       this.loadDefault();
+    //     }
+    //   );
+    // } else {
+    //   this.showWithReading();
+    // }
+
+    this.service.verifyTicket(this.ticketNo, this.plateNo).subscribe(
+      (ticketdata) => {
+        if (ticketdata.IsCompleted === false) {
+          this.verifiedTicketNo = ticketdata.TicketNo;
+          this.plateNo = ticketdata.PlateNo;
+          this.timeIn = ticketdata.EntranceDate;
+          this.timeOut = ticketdata.ExitDate;
+          this.duration = ticketdata.Duration;
+          this.id = ticketdata.Id;
         } else {
-          resolve(false);
+          this.showAlert();
         }
-      });
-    });
-
-    if (shouldReturn) {
-      return;
-    }
-
-    if (!this.withReading) {
-      this.service.verifyTicket(this.ticketNo, this.plateNo).subscribe(
-        (ticketdata) => {
-          if (ticketdata.IsCompleted === false) {
-            this.verifiedTicketNo = ticketdata.TicketNo;
-            this.plateNo = ticketdata.PlateNo;
-            this.timeIn = ticketdata.EntranceDate;
-            this.timeOut = ticketdata.ExitDate;
-            this.duration = ticketdata.Duration;
-            this.id = ticketdata.Id;
-          } else {
-            this.showAlert();
-          }
-        },
-        (error) => {
-          if (error.status === 404) {
-            this.showAlert();
-          }
-          this.loadDefault();
+      },
+      (error) => {
+        if (error.status === 404) {
+          this.showAlert();
         }
-      );
-    } else {
-      this.showWithReading();
-    }
+        this.loadDefault();
+      }
+    );
   }
   tenderAmountChanged(event: any) {
     const inputAmount = event.target.value;
