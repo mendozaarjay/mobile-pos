@@ -69,23 +69,23 @@ export class IssueticketPage implements OnInit {
     } else {
       this.showWithReading();
     }
-    const loading = await this.loadingController.create({
-      cssClass: 'my-custom-class',
-      message: 'Please wait while printing ticket...',
-      duration: 2000,
-    });
-    await loading.present();
-    this.service
-      .setTicket(this.ticketNo, this.plateNo)
-      .subscribe((ticketdata) => {
-        this.printer.print(ticketdata.Printable);
+    // const loading = await this.loadingController.create({
+    //   cssClass: 'my-custom-class',
+    //   message: 'Please wait while printing ticket...',
+    //   duration: 2000,
+    // });
+    // await loading.present();
+    // this.service
+    //   .setTicket(this.ticketNo, this.plateNo)
+    //   .subscribe((ticketdata) => {
+    //     this.printer.print(ticketdata.Printable);
 
-        this.loadNextTicket();
-      });
+    //     this.loadNextTicket();
+    //   });
 
-    await this.loadNextTicket();
-    this.plateNo = '';
-    const { role, data } = await loading.onDidDismiss();
+    // await this.loadNextTicket();
+    // this.plateNo = '';
+    // const { role, data } = await loading.onDidDismiss();
   }
 
   async loadNextTicket() {
