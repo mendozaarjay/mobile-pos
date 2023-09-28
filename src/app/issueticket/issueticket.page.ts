@@ -33,42 +33,42 @@ export class IssueticketPage implements OnInit {
   async presentLoading() {
     this.auditLogs.issueTicket(this.ticketNo, this.userId).subscribe((a) => {});
 
-    // const shouldReturn = await new Promise((resolve) => {
-    //   this.loginService.checkIfWithReading().subscribe((result) => {
-    //     if (result) {
-    //       this.showWithReading();
-    //       resolve(true);
-    //     } else {
-    //       resolve(false);
-    //     }
-    //   });
-    // });
+    const shouldReturn = await new Promise((resolve) => {
+      this.loginService.checkIfWithReading().subscribe((result) => {
+        if (result) {
+          this.showWithReading();
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      });
+    });
 
-    // if (shouldReturn) {
-    //   return;
-    // }
+    if (shouldReturn) {
+      return;
+    }
 
-    // if (!this.withReading) {
-    //   const loading = await this.loadingController.create({
-    //     cssClass: 'my-custom-class',
-    //     message: 'Please wait while printing ticket...',
-    //     duration: 2000,
-    //   });
-    //   await loading.present();
-    //   this.service
-    //     .setTicket(this.ticketNo, this.plateNo)
-    //     .subscribe((ticketdata) => {
-    //       this.printer.print(ticketdata.Printable);
+    if (!this.withReading) {
+      const loading = await this.loadingController.create({
+        cssClass: 'my-custom-class',
+        message: 'Please wait while printing ticket...',
+        duration: 2000,
+      });
+      await loading.present();
+      this.service
+        .setTicket(this.ticketNo, this.plateNo)
+        .subscribe((ticketdata) => {
+          this.printer.print(ticketdata.Printable);
 
-    //       this.loadNextTicket();
-    //     });
+          this.loadNextTicket();
+        });
 
-    //   await this.loadNextTicket();
-    //   this.plateNo = '';
-    //   const { role, data } = await loading.onDidDismiss();
-    // } else {
-    //   this.showWithReading();
-    // }
+      await this.loadNextTicket();
+      this.plateNo = '';
+      const { role, data } = await loading.onDidDismiss();
+    } else {
+      this.showWithReading();
+    }
     const loading = await this.loadingController.create({
       cssClass: 'my-custom-class',
       message: 'Please wait while printing ticket...',
